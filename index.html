@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VNDPay - Chạm Vào Vẻ Đẹp Đà Nẵng</title>
-    <link rel="icon" type="image/png" href="VNDPayLogo.png" />
+    <link rel="icon" type="image/png" href="DanaSoulLogo.png" />
     <link
       href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
       rel="stylesheet"
@@ -30,28 +30,452 @@
       #farewell h2 {
         font-family: "Dancing Script", cursive;
       }
-      /* Các style tùy chỉnh khác giữ nguyên */
-      :root {
-        --brand-primary: #00d2aa; /* Màu xanh ngọc (VNDPay style suggestion) */
-        --brand-secondary: #f0f0f0;
-        --bg-dark: #0f172a;
-        --bg-medium: #1e293b;
-        --text-light: #e2e8f0;
-        --text-dark: #94a3b8;
+      /* --- Kiểu cho Bản đồ Tương tác --- */
+      #map-section {
+        position: relative;
+        background-color: var(--bg-dark);
       }
+
+      #map-container {
+        position: relative;
+        width: 100%;
+        height: 600px;
+        border-radius: 1rem;
+        overflow: hidden;
+        border: 2px solid var(--brand-secondary);
+      }
+
+      /* Tìm và thay thế style này trong thẻ <style> của bạn */
+
+      .mapboxgl-popup-content {
+        background-color: rgba(18, 30, 23, 0.9) !important;
+        backdrop-filter: blur(5px);
+        color: var(--text-light) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4) !important;
+        font-family: "Be Vietnam Pro", sans-serif !important;
+        max-width: 280px !important; /* Tăng chiều rộng để vừa ảnh */
+        border: 1px solid var(--brand-secondary);
+        padding: 0 !important; /* XÓA: Bỏ padding để ảnh tràn viền */
+        overflow: hidden; /* Đảm bảo ảnh được bo góc */
+      }
+      .mapboxgl-popup-close-button {
+        color: var(--text-light) !important;
+        font-size: 20px;
+      }
+      .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+        border-top-color: var(--brand-secondary) !important;
+      }
+      .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+        border-bottom-color: var(--brand-secondary) !important;
+      }
+      .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+        border-right-color: var(--brand-secondary) !important;
+      }
+      .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+        border-left-color: var(--brand-secondary) !important;
+      }
+      .custom-marker {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: var(--brand-primary);
+        border: 2px solid var(--text-light);
+        cursor: pointer;
+        box-shadow: 0 0 10px var(--brand-primary);
+        transition: transform 0.2s ease, background-color 0.3s ease; /* Thêm transition */
+      }
+      .custom-marker:hover {
+        transform: scale(1.2);
+      }
+      /* MỚI: Hiệu ứng "thở" cho marker đang được chọn */
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(138, 176, 151, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 15px rgba(138, 176, 151, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(138, 176, 151, 0);
+        }
+      }
+      .custom-marker.active {
+        background-color: #fff; /* Nổi bật hơn */
+        transform: scale(1.2);
+        animation: pulse 1.5s infinite; /* Áp dụng hiệu ứng */
+      }
+      .custom-marker {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: var(--brand-primary);
+        border: 2px solid var(--text-light);
+        cursor: pointer;
+        box-shadow: 0 0 10px var(--brand-primary);
+        transition: transform 0.2s ease;
+      }
+      .custom-marker:hover {
+        transform: scale(1.2);
+      }
+      .custom-marker.active {
+        background-color: #fff;
+        box-shadow: 0 0 20px #fff;
+      }
+      .mapboxgl-ctrl-attrib {
+        display: none; /* Tùy chọn: ẩn thông tin bản quyền của Mapbox để giao diện gọn hơn */
+      }
+      #map-locations-list {
+        background-color: var(--bg-medium);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+      #map-locations-list .location-item {
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        border-left: 4px solid transparent;
+      }
+      #map-locations-list .location-item:hover,
+      #map-locations-list .location-item.active {
+        background-color: var(--bg-dark);
+        color: var(--brand-primary);
+        border-left-color: var(--brand-primary);
+        font-weight: 600;
+      }
+      :root {
+        --brand-primary: #8ab097; /* Light Green for accents */
+        --brand-secondary: #3a5f4b; /* Medium Green for buttons/hovers */
+        --bg-dark: #121e17; /* Very Dark Green for main background */
+        --bg-medium: #1a2b22; /* Dark Green for cards/sections */
+        --text-light: #eae7d5; /* Beige for primary text */
+        --text-dark: #cfccc0; /* Darker Beige for secondary text */
+      }
+
+      @font-face {
+        font-family: "Rebel";
+        src: url("Rebel/Web Fonts/Rebel.woff2") format("woff2"),
+          url("Rebel/Web Fonts/Rebel.woff") format("woff"),
+          url("Rebel/Web Fonts/Rebel.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+
       body {
         font-family: "Be Vietnam Pro", sans-serif;
         background-color: var(--bg-dark);
         color: var(--text-light);
         overflow-x: hidden;
       }
-      /* ... (Giữ nguyên các CSS slider, scrollbar của bạn) */
+      .font-logo {
+        font-family: "Rebel", cursive;
+      }
+      .header-scrolled {
+        background-color: rgba(18, 30, 23, 0.7); /* Fallback for --bg-dark */
+        backdrop-filter: blur(10px);
+      }
+      .nav-link::after {
+        content: "";
+        display: block;
+        width: 0;
+        height: 2px;
+        background: var(--brand-primary);
+        transition: width 0.3s;
+      }
+      .nav-link:hover::after,
+      .nav-link.active::after {
+        width: 100%;
+      }
+      .fade-in-section {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: opacity 1.2s cubic-bezier(0.165, 0.84, 0.44, 1),
+          transform 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+      }
+      .fade-in-section.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .destination-card-img-wrapper,
+      .culture-card-img-wrapper {
+        overflow: hidden;
+      }
+      .destination-card-img-wrapper img,
+      .culture-card-img-wrapper img {
+        transition: transform 0.4s ease;
+      }
+      .destination-card:hover .destination-card-img-wrapper img,
+      .culture-card:hover .culture-card-img-wrapper img {
+        transform: scale(1.08);
+      }
+      .cursor-dot,
+      .cursor-outline {
+        pointer-events: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        border-radius: 50%;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        display: none;
+      }
+      @media (min-width: 1024px) {
+        .cursor-dot,
+        .cursor-outline {
+          display: block;
+        }
+      }
+      .cursor-dot {
+        width: 8px;
+        height: 8px;
+        background-color: var(--brand-primary);
+      }
+      .cursor-outline {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(138, 176, 151, 0.2);
+        transition: transform 0.15s ease-out, width 0.2s, height 0.2s;
+      }
+      .cursor-outline.hover {
+        transform: scale(1.5);
+      }
+      #scrolly {
+        position: relative;
+      }
+      #scrolly-vis {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #scrolly-vis-content {
+        position: relative;
+        width: 45%;
+        height: 70vh;
+        max-width: 500px;
+      }
+      #scrolly-vis .scrolly-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 1rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transform: scale(0.95);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+      #scrolly-vis .scrolly-img.active {
+        opacity: 1;
+        transform: scale(1);
+      }
+      #scrolly article {
+        position: relative;
+        padding: 0 1rem;
+        max-width: 32rem;
+        margin: 0 auto;
+      }
+      .step {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+      }
+      .step p {
+        background-color: rgba(26, 43, 34, 0.6);
+        backdrop-filter: blur(8px);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(234, 231, 213, 0.1);
+        color: var(--text-light);
+      }
+      .lang-switcher button.active {
+        color: var(--brand-primary);
+        font-weight: 800;
+      }
+      #preloader {
+        position: fixed;
+        inset: 0;
+        background-color: var(--bg-dark);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.8s ease-out 0.5s;
+      }
+      #preloader h1 {
+        animation: pulse-fade 2s infinite ease-in-out;
+      }
+      @keyframes pulse-fade {
+        0%,
+        100% {
+          opacity: 0.2;
+          transform: scale(0.98);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .filter-btn {
+        padding: 0.5rem 1.25rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        background-color: var(--bg-medium);
+        color: var(--text-dark);
+      }
+      .filter-btn:hover {
+        background-color: var(--brand-secondary);
+        color: var(--text-light);
+      }
+      .filter-btn.active {
+        background-color: var(--brand-primary);
+        color: var(--bg-dark);
+        border-color: var(--brand-primary);
+      }
+      .modal-tab {
+        padding: 8px 16px;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        color: var(--text-dark);
+        font-weight: 600;
+      }
+      .modal-tab.active {
+        color: var(--brand-primary);
+        border-bottom-color: var(--brand-primary);
+      }
+
+      .about-collage-img {
+        animation: crossfade 16s infinite linear;
+      }
+      .about-collage-img:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .about-collage-img:nth-child(2) {
+        animation-delay: 4s;
+      }
+      .about-collage-img:nth-child(3) {
+        animation-delay: 8s;
+      }
+      .about-collage-img:nth-child(4) {
+        animation-delay: 12s;
+      }
+
+      @keyframes crossfade {
+        0% {
+          opacity: 0;
+          transform: scale(1);
+        }
+        12.5% {
+          opacity: 1;
+        }
+        25% {
+          opacity: 1;
+          transform: scale(1.05);
+        }
+        37.5% {
+          opacity: 0;
+          transform: scale(1.05);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(1);
+        }
+      }
+      .cuisine-menu-item {
+        transition: background-color 0.3s, color 0.3s, border-left-color 0.3s;
+        border-left: 4px solid transparent;
+      }
+      .cuisine-menu-item.active,
+      .cuisine-menu-item:hover {
+        background-color: var(--bg-medium);
+        color: var(--text-light);
+        border-left-color: var(--brand-primary);
+      }
+
+      .planner-option-btn {
+        background-color: var(--bg-medium);
+        color: var(--text-dark);
+        border: 2px solid var(--brand-secondary);
+        transition: all 0.3s ease;
+      }
+      .planner-option-btn.active {
+        background-color: var(--brand-primary);
+        border-color: var(--brand-primary);
+        color: var(--bg-dark);
+        font-weight: 700;
+      }
+
+      input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: var(--brand-primary);
+        cursor: pointer;
+        margin-top: -6px;
+      }
+      input[type="range"]::-moz-range-thumb {
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: var(--brand-primary);
+        cursor: pointer;
+      }
+      input[type="range"]::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 4px;
+        cursor: pointer;
+        background: var(--brand-secondary);
+        border-radius: 5px;
+      }
+      input[type="range"]::-moz-range-track {
+        width: 100%;
+        height: 4px;
+        cursor: pointer;
+        background: var(--brand-secondary);
+        border-radius: 5px;
+      }
+      /* Farewell Canvas Styling */
+      #farewell-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 15; /* Above background image and overlay, below text */
+      }
+      /* Dán đoạn này vào trong thẻ <style> */
+
+      /* --- Music Player Final Version Styles --- */
+      #play-pause-btn {
+        /* Hiệu ứng thở sẽ được điều khiển bằng JS thông qua box-shadow */
+        transition: box-shadow 0.2s linear, background-color 0.3s ease;
+      }
+
+      /* Tùy chỉnh thanh trượt âm lượng cho đẹp hơn */
       #volume-slider {
         -webkit-appearance: none;
-        width: 100px;
+        appearance: none;
+        width: 100%;
         height: 4px;
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 5px;
         outline: none;
         transition: opacity 0.2s;
       }
@@ -65,80 +489,151 @@
         border-radius: 50%;
         border: 2px solid var(--brand-secondary);
       }
+      #volume-slider::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        background: var(--text-light);
+        cursor: pointer;
+        border-radius: 50%;
+        border: 2px solid var(--brand-secondary);
+      }
     </style>
   </head>
   <body class="antialiased">
-    <div id="preloader" class="fixed inset-0 z-[60] bg-black flex items-center justify-center transition-opacity duration-500">
-      <h1 class="font-logo text-6xl text-white font-bold">VNDPay</h1>
+    <div id="preloader">
+      <h1 class="font-logo text-6xl text-white">VNDPay</h1>
     </div>
 
-    <div class="cursor-dot fixed w-2 h-2 bg-white rounded-full pointer-events-none z-50 mix-blend-difference hidden md:block"></div>
-    <div class="cursor-outline fixed w-8 h-8 border border-white rounded-full pointer-events-none z-50 mix-blend-difference transition-transform duration-100 hidden md:block"></div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
 
     <header
       id="main-header"
-      class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-opacity-90 bg-black backdrop-blur-sm"
+      class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
     >
       <div class="container mx-auto px-6 py-4">
         <div class="flex items-center justify-between">
           <a
             href="#"
-            class="font-logo text-4xl text-white font-bold magnetic-btn"
+            class="font-logo text-4xl text-white magnetic-btn"
             id="logo"
             >VNDPay</a
           >
           <nav class="hidden md:flex items-center space-x-8">
             <a
               href="#about"
-              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              class="nav-link text-white font-medium"
               data-lang-key="nav.about"
               >Giới thiệu</a
             >
             <a
               href="#destinations"
-              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              class="nav-link text-white font-medium"
               data-lang-key="nav.destinations"
               >Điểm đến</a
             >
             <a
               href="#culture"
-              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              class="nav-link text-white font-medium"
               data-lang-key="nav.culture"
               >Văn hóa</a
             >
             <a
               href="#history"
-              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              class="nav-link text-white font-medium"
               data-lang-key="nav.history"
               >Lịch sử</a
             >
-             <a
+            <a
               href="#cuisine"
-              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              class="nav-link text-white font-medium"
               data-lang-key="nav.cuisine"
               >Ẩm thực</a
             >
             <a
               href="#planner"
-              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              class="nav-link text-white font-medium"
               data-lang-key="nav.planner"
               >Kế hoạch</a
             >
             <a
               href="#contact"
-              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              class="nav-link text-white font-medium"
               data-lang-key="nav.contact"
               >Liên hệ</a
             >
           </nav>
-
-          <div
-            class="lang-switcher flex items-center justify-center text-white text-sm font-semibold space-x-4"
-          >
-            <button data-lang="vi" class="active hover:text-[var(--brand-primary)]">TIẾNG VIỆT</button>
-            <span>|</span>
-            <button data-lang="en" class="hover:text-[var(--brand-primary)]">ENGLISH</button>
+          <div class="flex items-center space-x-4">
+            <div
+              class="lang-switcher hidden md:flex items-center text-white text-sm font-semibold space-x-2"
+            >
+              <button data-lang="vi" class="active magnetic-btn">VN</button>
+              <span class="opacity-50">/</span>
+              <button data-lang="en" class="magnetic-btn">EN</button>
+            </div>
           </div>
+          <button id="mobile-menu-button" class="md:hidden text-white">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+          </button>
+        </div>
+      </div>
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden"
+        style="
+          background-color: rgba(18, 30, 23, 0.9);
+          backdrop-filter: blur(8px);
+        "
+      >
+        <a
+          href="#about"
+          class="nav-link-mobile block py-3 px-6 text-white hover:bg-[var(--brand-secondary)]"
+          data-lang-key="nav.about"
+          >Giới thiệu</a
+        >
+        <a
+          href="#destinations"
+          class="nav-link-mobile block py-3 px-6 text-white hover:bg-[var(--brand-secondary)]"
+          data-lang-key="nav.destinations"
+          >Điểm đến</a
+        >
+        <a
+          href="#culture"
+          class="nav-link-mobile block py-3 px-6 text-white hover:bg-[var(--brand-secondary)]"
+          data-lang-key="nav.culture"
+          >Văn hóa</a
+        >
+        <a
+          href="#history"
+          class="nav-link-mobile block py-3 px-6 text-white hover:bg-[var(--brand-secondary)]"
+          data-lang-key="nav.history"
+          >Lịch sử</a
+        >
+        <a
+          href="#cuisine"
+          class="nav-link-mobile block py-3 px-6 text-white hover:bg-[var(--brand-secondary)]"
+          data-lang-key="nav.cuisine"
+          >Ẩm thực</a
+        >
+        <a
+          href="#planner"
+          class="nav-link-mobile block py-3 px-6 text-white hover:bg-[var(--brand-secondary)]"
+          data-lang-key="nav.planner"
+          >Kế hoạch</a
+        >
+        <a
+          href="#contact"
+          class="nav-link-mobile block py-3 px-6 text-white hover:bg-[var(--brand-secondary)]"
+          data-lang-key="nav.contact"
+          >Liên hệ</a
+        >
+
+        <div
+          class="lang-switcher flex items-center justify-center text-white text-sm font-semibold space-x-4 py-4 border-t border-[var(--brand-secondary)]"
+        >
+          <button data-lang="vi" class="active">TIẾNG VIỆT</button>
+          <span>|</span>
+          <button data-lang="en">ENGLISH</button>
         </div>
       </div>
     </header>
@@ -149,18 +644,18 @@
         class="relative h-screen w-full flex items-center justify-center text-center text-white overflow-hidden"
       >
         <div class="absolute inset-0 bg-black opacity-40 z-10"></div>
-        <div id="hero-slideshow" class="absolute inset-0 w-full h-full bg-[url('https://placehold.co/1920x1080/1e293b/FFF?text=Da+Nang')] bg-cover bg-center"></div>
+        <div id="hero-slideshow" class="absolute inset-0 w-full h-full"></div>
         <div class="relative z-20 p-6">
           <h1
             id="hero-title"
-            class="font-logo text-6xl md:text-8xl lg:text-9xl text-white mb-4 font-bold"
+            class="font-logo text-6xl md:text-8xl lg:text-9xl text-white mb-4 opacity-0"
             style="text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7)"
           >
             VNDPay
           </h1>
           <p
             id="hero-subtitle"
-            class="text-lg md:text-2xl max-w-2xl mx-auto text-[var(--text-light)]"
+            class="text-lg md:text-2xl max-w-2xl mx-auto text-[var(--text-light)] opacity-0"
             data-lang-key="hero.subtitleNew"
           >
             Khám phá vẻ đẹp tiềm ẩn của thành phố đáng sống nhất Việt Nam.
@@ -202,12 +697,27 @@
               </p>
             </div>
             <div
-              class="relative h-80 lg:h-96 rounded-lg overflow-hidden shadow-2xl bg-gray-800"
+              class="relative h-80 lg:h-96 rounded-lg overflow-hidden shadow-2xl"
             >
-             <img
-                src="https://placehold.co/800x600/1e293b/FFF?text=Cau+Rong"
+              <img
+                src="images/Gioi thieu/cau-rong-da-nang-saigon-travel.jpg"
                 alt="Cầu Rồng"
-                class="absolute inset-0 w-full h-full object-cover"
+                class="about-collage-img absolute inset-0 w-full h-full object-cover opacity-0"
+              />
+              <img
+                src="images/Gioi thieu/Hang-động-núi-Ngũ-Hành-Sơn-2.jpg"
+                alt="Ngũ Hành Sơn"
+                class="about-collage-img absolute inset-0 w-full h-full object-cover opacity-0"
+              />
+              <img
+                src="images/Gioi thieu/kien-truc-pho-co-hoi-an-2_1665128843.jpg"
+                alt="Phố cổ Hội An"
+                class="about-collage-img absolute inset-0 w-full h-full object-cover opacity-0"
+              />
+              <img
+                src="images/Gioi thieu/my_khe.jpg"
+                alt="Biển Mỹ Khê"
+                class="about-collage-img absolute inset-0 w-full h-full object-cover opacity-0"
               />
             </div>
           </div>
@@ -215,16 +725,150 @@
       </section>
 
       <section id="destinations" class="py-24 bg-[var(--bg-medium)]">
-          <div class="container mx-auto px-6">
-              <h2 class="text-3xl font-bold text-white mb-8" data-lang-key="destinations.title">Điểm Đến Biểu Tượng</h2>
-              <div class="flex space-x-4 mb-8">
-                  <button class="filter-btn active text-white px-4 py-2 rounded-full border border-white" data-filter="all" data-lang-key="destinations.filter.all">Tất cả</button>
-                  <button class="filter-btn text-gray-400 px-4 py-2 rounded-full border border-gray-600 hover:text-white" data-filter="architecture" data-lang-key="destinations.filter.architecture">Kiến trúc</button>
-                  <button class="filter-btn text-gray-400 px-4 py-2 rounded-full border border-gray-600 hover:text-white" data-filter="nature" data-lang-key="destinations.filter.nature">Thiên nhiên</button>
-              </div>
-              <div id="destinations-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  </div>
+        <div class="container mx-auto px-6 fade-in-section">
+          <h2
+            class="text-3xl md:text-4xl font-bold text-white mb-6 text-center"
+            data-lang-key="destinations.title"
+          >
+            Điểm Đến Biểu Tượng
+          </h2>
+          <div
+            id="filter-buttons"
+            class="flex justify-center flex-wrap gap-2 mb-12"
+          ></div>
+          <div
+            id="destinations-grid"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+          ></div>
+        </div>
+      </section>
+
+      <section id="map-section" class="py-24 bg-[var(--bg-dark)]">
+        <div class="container mx-auto px-6 fade-in-section">
+          <h2
+            class="text-3xl md:text-4xl font-bold text-white mb-4 text-center"
+            data-lang-key="map.title"
+          >
+            Bản Đồ Trực Quan
+          </h2>
+          <p
+            class="text-[var(--text-dark)] max-w-3xl mx-auto mb-12 text-center"
+            data-lang-key="map.desc"
+          >
+            Khám phá vị trí các điểm đến mang tính biểu tượng của Đà Nẵng. Nhấn
+            vào một điểm trên bản đồ hoặc trong danh sách để xem chi tiết.
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+              <div id="map-container"></div>
+            </div>
+            <div class="lg:col-span-1">
+              <div id="map-locations-list"></div>
+            </div>
           </div>
+        </div>
+      </section>
+
+      <section id="culture" class="py-24 bg-[var(--bg-dark)]">
+        <div class="container mx-auto px-6 fade-in-section">
+          <h2
+            class="text-3xl md:text-4xl font-bold text-white mb-4 text-center"
+            data-lang-key="culture.title"
+          >
+            Bản Sắc Văn Hóa Miền Trung
+          </h2>
+          <p
+            class="text-[var(--text-dark)] max-w-3xl mx-auto mb-16 text-center"
+            data-lang-key="culture.intro"
+          >
+            Đà Nẵng không chỉ là thành phố của những cây cầu, mà còn là một
+            không gian văn hóa đặc sắc, nơi giao hòa giữa truyền thống và hiện
+            đại, giữa bản sắc địa phương và tinh thần hội nhập.
+          </p>
+
+          <div class="mb-16 bg-[var(--bg-medium)] p-8 rounded-lg shadow-lg">
+            <h3
+              class="text-2xl font-bold text-white mb-4"
+              data-lang-key="culture.people.title"
+            >
+              Con Người Đà Nẵng
+            </h3>
+            <p
+              class="text-[var(--text-dark)]"
+              data-lang-key="culture.people.desc"
+            >
+              Con người Đà Nẵng nổi bật bởi sự hiền hòa, thật thà, thân thiện và
+              trọng nghĩa tình. Trong cách giao tiếp, cư xử, người Đà Nẵng luôn
+              toát lên sự chân thành, mến khách. Chính điều này đã khiến du
+              khách đến Đà Nẵng không chỉ "xem cảnh mà còn “gặp người'. Tinh
+              thần sống kỷ cương, văn minh, ý thức bảo vệ môi trường, ứng xử
+              cộng đồng tốt là những giá trị văn hóa hiện đại đáng học hỏi.
+            </p>
+          </div>
+
+          <div class="mb-20">
+            <h3
+              class="text-2xl md:text-3xl font-bold text-white mb-10 text-center"
+              data-lang-key="culture.festivals.title"
+            >
+              Lễ Hội Sôi Động
+            </h3>
+            <div
+              id="festivals-grid"
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6"
+            ></div>
+          </div>
+
+          <div>
+            <h3
+              class="text-2xl md:text-3xl font-bold text-white mb-10 text-center"
+              data-lang-key="culture.heritage.title"
+            >
+              Di Sản Trăm Năm
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+              <div id="heritage-non-nuoc"></div>
+              <div id="heritage-cham"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="history" class="bg-[var(--bg-medium)]">
+        <div id="scrolly">
+          <div id="scrolly-vis"><div id="scrolly-vis-content"></div></div>
+          <article id="scrolly-article"></article>
+        </div>
+      </section>
+
+      <section id="cuisine" class="py-24 bg-[var(--bg-dark)]">
+        <div class="container mx-auto px-6 fade-in-section">
+          <h2
+            class="text-3xl md:text-4xl font-bold text-white mb-4 text-center"
+            data-lang-key="cuisine.title"
+          >
+            Hành Trình Ẩm Thực
+          </h2>
+          <p
+            class="text-[var(--text-dark)] max-w-3xl mx-auto mb-12 text-center"
+            data-lang-key="cuisine.desc"
+          >
+            Khám phá Đà Nẵng qua hương vị là một trải nghiệm không thể thiếu.
+            Mỗi món ăn là một câu chuyện về văn hoá, về sản vật địa phương và sự
+            khéo léo của người dân nơi đây.
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1">
+              <ul id="cuisine-menu" class="space-y-2"></ul>
+            </div>
+            <div
+              id="cuisine-details-container"
+              class="lg:col-span-2 bg-[var(--bg-medium)] rounded-lg p-6 shadow-lg"
+            ></div>
+          </div>
+        </div>
       </section>
 
       <section id="planner" class="py-24 bg-[var(--bg-medium)]">
@@ -242,7 +886,40 @@
             Chọn các tiêu chí bên dưới, VNDPay sẽ gợi ý một hành trình được
             thiết kế dành riêng cho bạn.
           </p>
-          <div class="text-center text-gray-500">[Khu vực Planner Form]</div>
+
+          <div
+            class="max-w-5xl mx-auto bg-[var(--bg-dark)] p-8 rounded-lg shadow-2xl"
+          >
+            <div class="mb-8">
+              <div class="mb-6">
+                <label
+                  class="block mb-3 text-lg font-medium text-[var(--text-light)]"
+                  data-lang-key="planner.daysLabel"
+                  >1. Bạn muốn đi bao nhiêu ngày?</label
+                >
+                <div
+                  id="planner-days-options"
+                  class="flex flex-wrap gap-3"
+                ></div>
+              </div>
+              <div>
+                <label
+                  class="block mb-3 text-lg font-medium text-[var(--text-light)]"
+                  data-lang-key="planner.styleLabel"
+                  >2. Phong cách chuyến đi của bạn là gì?</label
+                >
+                <div
+                  id="planner-style-options"
+                  class="flex flex-wrap gap-3"
+                ></div>
+              </div>
+            </div>
+
+            <div
+              id="planner-result"
+              class="mt-8 border-t border-[var(--brand-secondary)] pt-8"
+            ></div>
+          </div>
         </div>
       </section>
 
@@ -252,10 +929,11 @@
       >
         <div class="absolute inset-0 bg-black opacity-60 z-10"></div>
         <img
-          src="https://placehold.co/1920x1080/000/FFF?text=Night+Da+Nang"
+          src="images/Hen gap lai/da_nang_ve_dem.jpg"
           alt="Đà Nẵng về đêm"
           class="absolute inset-0 w-full h-full object-cover"
         />
+        <canvas id="farewell-canvas"></canvas>
         <div class="relative z-20 p-6 fade-in-section">
           <h2 class="text-5xl md:text-7xl mb-4" data-lang-key="farewell.title">
             Hẹn Gặp Lại
@@ -301,7 +979,7 @@
       <div class="container mx-auto px-6 py-8">
         <div class="flex justify-center mb-6">
           <a href="#">
-            <img src="VNDPayLogo.png" alt="VNDPay Logo" class="h-40 object-contain" />
+            <img src="DanaSoulLogo.png" alt="VNDPay Logo" class="h-40" />
           </a>
         </div>
         <div
@@ -311,7 +989,7 @@
             class="text-sm text-gray-500 mb-4 md:mb-0"
             data-lang-key="footer.copyright"
           >
-            © 2025 VNDPay. Một sản phẩm dự thi "NEO-UP 2025".
+            © 2025 VNDPay. Một sản phẩm dự thi "Hành trình Thống nhất".
           </p>
           <div class="flex space-x-6">
             <a href="#" class="hover:text-white"
@@ -331,334 +1009,2563 @@
       </div>
     </footer>
 
-    <div id="destination-modal" class="fixed inset-0 z-[100] hidden">
-        <div class="absolute inset-0 bg-black/80" onclick="document.getElementById('destination-modal').classList.add('hidden')"></div>
-        <div id="modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-4xl bg-[#1e293b] rounded-lg shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
+    <div
+      id="contact-modal"
+      class="fixed inset-0 bg-black bg-opacity-70 z-[60] flex items-center justify-center p-4 hidden"
+    >
+      <div
+        id="contact-modal-content"
+        class="bg-[var(--bg-medium)] text-white rounded-lg shadow-2xl max-w-lg w-full relative transform scale-95 opacity-0 transition-all duration-300 p-8"
+      >
+        <button
+          id="contact-modal-close"
+          class="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl"
+        >
+          &times;
+        </button>
+        <div id="contact-form-container">
+          <h3
+            class="text-2xl font-bold mb-6 text-center"
+            data-lang-key="contact.form.title"
+          >
+            Gửi Lời Nhắn Của Bạn
+          </h3>
+          <form id="contact-form">
+            <div class="mb-4">
+              <label
+                for="name"
+                class="block mb-2 text-sm font-medium text-[var(--text-light)]"
+                data-lang-key="contact.form.name"
+                >Tên của bạn</label
+              >
+              <input
+                type="text"
+                id="name"
+                class="w-full p-2.5 rounded-lg bg-[var(--bg-dark)] border border-[var(--brand-secondary)] focus:ring-[var(--brand-primary)] focus:border-[var(--brand-primary)]"
+                required
+              />
             </div>
+            <div class="mb-4">
+              <label
+                for="email"
+                class="block mb-2 text-sm font-medium text-[var(--text-light)]"
+                data-lang-key="contact.form.email"
+                >Email</label
+              >
+              <input
+                type="email"
+                id="email"
+                class="w-full p-2.5 rounded-lg bg-[var(--bg-dark)] border border-[var(--brand-secondary)] focus:ring-[var(--brand-primary)] focus:border-[var(--brand-primary)]"
+                required
+              />
+            </div>
+            <div class="mb-6">
+              <label
+                for="message"
+                class="block mb-2 text-sm font-medium text-[var(--text-light)]"
+                data-lang-key="contact.form.message"
+                >Lời nhắn</label
+              >
+              <textarea
+                id="message"
+                rows="4"
+                class="w-full p-2.5 rounded-lg bg-[var(--bg-dark)] border border-[var(--brand-secondary)] focus:ring-[var(--brand-primary)] focus:border-[var(--brand-primary)]"
+                required
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              class="w-full text-white bg-[var(--brand-secondary)] hover:bg-[var(--brand-primary)] hover:text-[var(--bg-dark)] font-bold rounded-lg text-sm px-5 py-3 text-center transition-colors duration-300"
+              data-lang-key="contact.form.send"
+            >
+              Gửi
+            </button>
+          </form>
+        </div>
+        <div id="contact-success-message" class="hidden text-center">
+          <i
+            data-lucide="check-circle-2"
+            class="w-16 h-16 mx-auto text-[var(--brand-primary)] mb-4"
+          ></i>
+          <h3
+            class="text-2xl font-bold mb-4"
+            data-lang-key="contact.success.title"
+          >
+            Cảm ơn bạn!
+          </h3>
+          <p
+            class="text-[var(--text-dark)]"
+            data-lang-key="contact.success.desc"
+          >
+            Lời nhắn của bạn đã được gửi. Chúng tôi sẽ sớm liên hệ lại với bạn.
+          </p>
+        </div>
+      </div>
+      <button
+        id="contact-modal-close-outer"
+        class="absolute inset-0 -z-10"
+      ></button>
+    </div>
+    <div
+      id="contact-modal"
+      class="fixed inset-0 bg-black bg-opacity-70 z-[60] flex items-center justify-center p-4 hidden"
+    >
+      // ... existing contact modal content ...
+    </div>
+
+    <div
+      id="destination-modal"
+      class="fixed inset-0 bg-black bg-opacity-70 z-[60] flex items-center justify-center p-4 hidden"
+    >
+      <div
+        id="modal-content"
+        class="bg-[var(--bg-medium)] text-white rounded-lg shadow-2xl max-w-4xl w-full relative transform scale-95 opacity-0 transition-all duration-300 flex flex-col md:flex-row max-h-[90vh]"
+      ></div>
+      <button
+        id="modal-close-outer"
+        class="absolute inset-0 -z-10"
+        aria-label="Close modal"
+      ></button>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- KHỞI TẠO ---
+        lucide.createIcons();
+        const preloader = document.getElementById("preloader");
+        window.addEventListener("load", () => {
+          setTimeout(() => {
+            preloader.style.opacity = "0";
+            preloader.addEventListener(
+              "transitionend",
+              () => (preloader.style.display = "none")
+            );
 
-            // Preloader animation simulation
-            setTimeout(() => {
-                document.getElementById('preloader').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('preloader').style.display = 'none';
-                }, 500);
-            }, 1000);
+            // Hero animations
+            gsap.to("#hero-title", {
+              duration: 1.2,
+              y: 0,
+              opacity: 1,
+              ease: "power3.out",
+              delay: 0.2,
+            });
+            gsap.to("#hero-subtitle", {
+              duration: 1.2,
+              y: 0,
+              opacity: 1,
+              ease: "power3.out",
+              delay: 0.4,
+            });
+          }, 1800);
+        });
 
-            let currentLanguage = 'vi';
-
-            // --- DATA & LANGUAGES ---
-            const languageContent = {
-            vi: {
-              nav: {
-                about: "Giới thiệu",
-                destinations: "Điểm đến",
-                culture: "Văn hóa",
-                history: "Lịch sử",
-                cuisine: "Ẩm thực",
-                planner: "Kế hoạch",
-                contact: "Liên hệ",
-              },
-              hero: {
-                subtitleNew:
-                  "Khám phá vẻ đẹp tiềm ẩn của thành phố đáng sống nhất Việt Nam.",
-              },
-              about: {
-                welcomeTitle: "Chào mừng đến với VNDPay",
-                intro1:
-                  "Khám phá Đà Nẵng – nơi hội tụ vẻ đẹp thiên nhiên, chiều sâu văn hóa và nhịp sống hiện đại. VNDPay dẫn lối bạn về với linh hồn miền Trung: một Việt Nam kiên cường, đậm đà bản sắc và luôn vươn mình ra biển lớn.",
-                intro2:
-                  "Nằm giữa dải đất miền Trung duyên dáng, Đà Nẵng là một thành phố trẻ trung, năng động và đầy sức sống. Từ Cầu Rồng phun lửa, Cầu Vàng lơ lửng giữa trời, đến bán đảo Sơn Trà hoang sơ hay Phố cổ Hội An rêu phong, Đà Nẵng mở ra hành trình khám phá đầy cảm hứng – nơi bạn không chỉ dừng chân, mà còn lưu giữ cảm xúc.",
-              },
-              destinations: {
-                title: "Điểm Đến Biểu Tượng",
-                filter: {
-                  all: "Tất cả",
-                  architecture: "Kiến trúc",
-                  nature: "Thiên nhiên",
-                  culture: "Văn hoá",
-                },
-              },
-              planner: {
-                title: "Lập Kế Hoạch Chuyến Đi",
-                desc: "Chọn các tiêu chí bên dưới, VNDPay sẽ gợi ý một hành trình được thiết kế dành riêng cho bạn.",
-                daysLabel: "1. Bạn muốn đi bao nhiêu ngày?",
-                styleLabel: "2. Phong cách chuyến đi của bạn là gì?",
-                styles: {
-                  discovery: "Khám Phá",
-                  relax: "Nghỉ Dưỡng",
-                  culture: "Văn Hóa",
-                },
-                resultTitle: "Lịch trình gợi ý cho bạn:",
-                noResult:
-                  "Vui lòng chọn số ngày và ít nhất một phong cách để tạo lịch trình.",
-                day: "Ngày",
-                day_unit: "ngày",
-                morning: "Sáng",
-                afternoon: "Chiều",
-                evening: "Tối",
-              },
-              farewell: {
-                title: "Hẹn Gặp Lại",
-                desc: "Hành trình khám phá có thể kết thúc, nhưng những ký ức về Đà Nẵng sẽ còn mãi. VNDPay hy vọng đã mang đến cho bạn những cảm hứng và hẹn gặp lại bạn ở thành phố xinh đẹp này.",
-              },
-              contact: {
-                title: "Liên Hệ Với Chúng Tôi",
-                desc: "Bạn có câu hỏi hoặc muốn chia sẻ trải nghiệm? Đừng ngần ngại gửi tin nhắn cho VNDPay.",
-                button: "Gửi Lời Nhắn",
-                form: {
-                  title: "Gửi Lời Nhắn Của Bạn",
-                  name: "Tên của bạn",
-                  email: "Email",
-                  message: "Lời nhắn",
-                  send: "Gửi",
-                },
-                success: {
-                  title: "Cảm ơn bạn!",
-                  desc: "Lời nhắn của bạn đã được gửi. Chúng tôi sẽ sớm liên hệ lại với bạn.",
-                },
-              },
-              footer: {
-                copyright:
-                  '© 2025 VNDPay. Một sản phẩm dự thi "NEO-UP 2025".',
-              },
-              modal: {
-                tabs: { overview: "Tổng quan", history: "Lịch sử", tips: "Mẹo" },
-                no_history: "Chưa có thông tin lịch sử.",
-                no_tips: "Chưa có mẹo nào.",
+        // --- ĐA NGÔN NGỮ (i18n) & DỮ LIỆU ---
+        const languageContent = {
+          vi: {
+            nav: {
+              about: "Giới thiệu",
+              destinations: "Điểm đến",
+              culture: "Văn hóa",
+              history: "Lịch sử",
+              cuisine: "Ẩm thực",
+              // farewell: "Tạm biệt", // Xóa dòng này
+              planner: "Kế hoạch",
+              contact: "Liên hệ",
+            },
+            hero: {
+              subtitleNew:
+                "Khám phá vẻ đẹp tiềm ẩn của thành phố đáng sống nhất Việt Nam.",
+            },
+            about: {
+              welcomeTitle: "Chào mừng đến với VNDPay",
+              intro1:
+                "Khám phá Đà Nẵng – nơi hội tụ vẻ đẹp thiên nhiên, chiều sâu văn hóa và nhịp sống hiện đại. VNDPay dẫn lối bạn về với linh hồn miền Trung: một Việt Nam kiên cường, đậm đà bản sắc và luôn vươn mình ra biển lớn.",
+              intro2:
+                "Nằm giữa dải đất miền Trung duyên dáng, Đà Nẵng là một thành phố trẻ trung, năng động và đầy sức sống. Từ Cầu Rồng phun lửa, Cầu Vàng lơ lửng giữa trời, đến bán đảo Sơn Trà hoang sơ hay Phố cổ Hội An rêu phong, Đà Nẵng mở ra hành trình khám phá đầy cảm hứng – nơi bạn không chỉ dừng chân, mà còn lưu giữ cảm xúc.",
+            },
+            destinations: {
+              title: "Điểm Đến Biểu Tượng",
+              filter: {
+                all: "Tất cả",
+                architecture: "Kiến trúc",
+                nature: "Thiên nhiên",
+                culture: "Văn hoá",
               },
             },
-            en: {
-              nav: {
-                about: "About",
-                destinations: "Destinations",
+            culture: {
+              title: "Bản Sắc Văn Hóa Miền Trung",
+              intro:
+                "Đà Nẵng không chỉ là thành phố của những cây cầu, mà còn là một không gian văn hóa đặc sắc, nơi giao hòa giữa truyền thống và hiện đại, giữa bản sắc địa phương và tinh thần hội nhập.",
+              people: {
+                title: "Con Người Đà Nẵng",
+                desc: "Con người Đà Nẵng nổi bật bởi sự hiền hòa, thật thà, thân thiện và trọng nghĩa tình. Trong cách giao tiếp, cư xử, người Đà Nẵng luôn toát lên sự chân thành, mến khách. Chính điều này đã khiến du khách đến Đà Nẵng không chỉ 'xem cảnh mà còn “gặp người'. Tinh thần sống kỷ cương, văn minh, ý thức bảo vệ môi trường, ứng xử cộng đồng tốt là những giá trị văn hóa hiện đại đáng học hỏi.",
+              },
+              festivals: {
+                title: "Lễ Hội Sôi Động",
+              },
+              heritage: {
+                title: "Di Sản Trăm Năm",
+              },
+            },
+            cuisine: {
+              title: "Hành Trình Ẩm Thực",
+              desc: "Khám phá Đà Nẵng qua hương vị là một trải nghiệm không thể thiếu. Mỗi món ăn là một câu chuyện về văn hoá, về sản vật địa phương và sự khéo léo của người dân nơi đây.",
+              flavorTitle: "Hương Vị",
+              locationTitle: "Gợi Ý Điểm Bán",
+            },
+            planner: {
+              title: "Lập Kế Hoạch Chuyến Đi",
+              desc: "Chọn các tiêu chí bên dưới, VNDPay sẽ gợi ý một hành trình được thiết kế dành riêng cho bạn.",
+              daysLabel: "1. Bạn muốn đi bao nhiêu ngày?",
+              styleLabel: "2. Phong cách chuyến đi của bạn là gì?",
+              styles: {
+                discovery: "Khám Phá",
+                relax: "Nghỉ Dưỡng",
+                culture: "Văn Hóa",
+              },
+              resultTitle: "Lịch trình gợi ý cho bạn:",
+              noResult:
+                "Vui lòng chọn số ngày và ít nhất một phong cách để tạo lịch trình.",
+              day: "Ngày",
+              day_unit: "ngày",
+              morning: "Sáng",
+              afternoon: "Chiều",
+              evening: "Tối",
+            },
+            farewell: {
+              title: "Hẹn Gặp Lại",
+              desc: "Hành trình khám phá có thể kết thúc, nhưng những ký ức về Đà Nẵng sẽ còn mãi. VNDPay hy vọng đã mang đến cho bạn những cảm hứng và hẹn gặp lại bạn ở thành phố xinh đẹp này.",
+            },
+            contact: {
+              title: "Liên Hệ Với Chúng Tôi",
+              desc: "Bạn có câu hỏi hoặc muốn chia sẻ trải nghiệm? Đừng ngần ngại gửi tin nhắn cho VNDPay.",
+              button: "Gửi Lời Nhắn",
+              form: {
+                title: "Gửi Lời Nhắn Của Bạn",
+                name: "Tên của bạn",
+                email: "Email",
+                message: "Lời nhắn",
+                send: "Gửi",
+              },
+              success: {
+                title: "Cảm ơn bạn!",
+                desc: "Lời nhắn của bạn đã được gửi. Chúng tôi sẽ sớm liên hệ lại với bạn.",
+              },
+            },
+            footer: {
+              copyright:
+                '© 2025 VNDPay. Một sản phẩm dự thi "Hành trình Thống nhất".',
+            },
+            modal: {
+              tabs: { overview: "Tổng quan", history: "Lịch sử", tips: "Mẹo" },
+              no_history: "Chưa có thông tin lịch sử.",
+              no_tips: "Chưa có mẹo nào.",
+            },
+          },
+          en: {
+            nav: {
+              about: "About",
+              destinations: "Destinations",
+              culture: "Culture",
+              history: "History",
+              cuisine: "Cuisine",
+              // farewell: "Farewell", // Xóa dòng này
+              planner: "Planner",
+              contact: "Contact",
+            },
+            hero: {
+              subtitleNew:
+                "Discover the hidden beauty of Vietnam's most livable city.",
+            },
+            about: {
+              welcomeTitle: "Welcome to VNDPay",
+              intro1:
+                "Explore Da Nang – a convergence of natural beauty, cultural depth, and modern vitality. VNDPay guides you to the soul of the Central Region: a resilient Vietnam, rich in identity, and always reaching for the great sea.",
+              intro2:
+                "Nestled in the charming Central Coast, Da Nang is a young, dynamic, and vibrant city. From the fire-breathing Dragon Bridge and the sky-high Golden Bridge to the pristine Son Tra Peninsula or the ancient town of Hoi An, Da Nang offers an inspiring journey where you don't just visit, you create lasting memories.",
+            },
+            destinations: {
+              title: "Iconic Destinations",
+              filter: {
+                all: "All",
+                architecture: "Architecture",
+                nature: "Nature",
                 culture: "Culture",
-                history: "History",
-                cuisine: "Cuisine",
-                planner: "Planner",
-                contact: "Contact",
-              },
-              hero: {
-                subtitleNew:
-                  "Discover the hidden beauty of Vietnam's most livable city.",
-              },
-              about: {
-                welcomeTitle: "Welcome to VNDPay",
-                intro1:
-                  "Explore Da Nang – a convergence of natural beauty, cultural depth, and modern vitality. VNDPay guides you to the soul of the Central Region: a resilient Vietnam, rich in identity, and always reaching for the great sea.",
-                intro2:
-                  "Nestled in the charming Central Coast, Da Nang is a young, dynamic, and vibrant city. From the fire-breathing Dragon Bridge and the sky-high Golden Bridge to the pristine Son Tra Peninsula or the ancient town of Hoi An, Da Nang offers an inspiring journey where you don't just visit, you create lasting memories.",
-              },
-              destinations: {
-                title: "Iconic Destinations",
-                filter: {
-                  all: "All",
-                  architecture: "Architecture",
-                  nature: "Nature",
-                  culture: "Culture",
-                },
-              },
-              planner: {
-                title: "Plan Your Trip",
-                desc: "Select the criteria below, and VNDPay will suggest a tailor-made itinerary for you.",
-                daysLabel: "1. How many days is your trip?",
-                styleLabel: "2. What is your travel style?",
-                styles: {
-                  discovery: "Discovery",
-                  relax: "Relaxation",
-                  culture: "Cultural",
-                },
-                resultTitle: "Your Suggested Itinerary:",
-                noResult:
-                  "Please select the number of days and at least one travel style to generate an itinerary.",
-                day: "Day",
-                day_unit: "days",
-                morning: "Morning",
-                afternoon: "Afternoon",
-                evening: "Evening",
-              },
-              farewell: {
-                title: "See You Again",
-                desc: "The journey of discovery may end, but the memories of Da Nang will last forever. VNDPay hopes to have inspired you and looks forward to seeing you again in this beautiful city.",
-              },
-              contact: {
-                title: "Contact Us",
-                desc: "Have a question or want to share your experience? Feel free to send a message to VNDPay.",
-                button: "Send a Message",
-                form: {
-                  title: "Send Your Message",
-                  name: "Your Name",
-                  email: "Email",
-                  message: "Message",
-                  send: "Send",
-                },
-                success: {
-                  title: "Thank You!",
-                  desc: "Your message has been sent. We will get back to you soon.",
-                },
-              },
-              footer: {
-                copyright:
-                  '© 2025 VNDPay. An entry for the "NEO-UP 2025" contest.',
-              },
-              modal: {
-                tabs: { overview: "Overview", history: "History", tips: "Tips" },
-                no_history: "No history information available.",
-                no_tips: "No tips available.",
               },
             },
-          };
+            culture: {
+              title: "The Cultural Identity of Central Vietnam",
+              intro:
+                "Da Nang is not only a city of bridges but also a unique cultural space, where tradition and modernity, local identity and a spirit of integration harmonize.",
+              people: {
+                title: "The People of Da Nang",
+                desc: "The people of Da Nang are known for being gentle, honest, friendly, and loyal. In communication and behavior, they always exude sincerity and hospitality. This is what makes visitors to Da Nang not only 'see the sights' but also 'meet the people'. The spirit of disciplined, civilized living, environmental awareness, and good community conduct are admirable modern cultural values.",
+              },
+              festivals: {
+                title: "Vibrant Festivals",
+              },
+              heritage: {
+                title: "Centuries of Heritage",
+              },
+            },
+            cuisine: {
+              title: "A Culinary Journey",
+              desc: "Exploring Da Nang through its flavors is an essential experience. Each dish tells a story of culture, local produce, and the skill of its people.",
+              flavorTitle: "Flavor",
+              locationTitle: "Where to Try",
+            },
+            planner: {
+              title: "Plan Your Trip",
+              desc: "Select the criteria below, and VNDPay will suggest a tailor-made itinerary for you.",
+              daysLabel: "1. How many days is your trip?",
+              styleLabel: "2. What is your travel style?",
+              styles: {
+                discovery: "Discovery",
+                relax: "Relaxation",
+                culture: "Cultural",
+              },
+              resultTitle: "Your Suggested Itinerary:",
+              noResult:
+                "Please select the number of days and at least one travel style to generate an itinerary.",
+              day: "Day",
+              day_unit: "days",
+              morning: "Morning",
+              afternoon: "Afternoon",
+              evening: "Evening",
+            },
+            farewell: {
+              title: "See You Again",
+              desc: "The journey of discovery may end, but the memories of Da Nang will last forever. VNDPay hopes to have inspired you and looks forward to seeing you again in this beautiful city.",
+            },
+            contact: {
+              title: "Contact Us",
+              desc: "Have a question or want to share your experience? Feel free to send a message to VNDPay.",
+              button: "Send a Message",
+              form: {
+                title: "Send Your Message",
+                name: "Your Name",
+                email: "Email",
+                message: "Message",
+                send: "Send",
+              },
+              success: {
+                title: "Thank You!",
+                desc: "Your message has been sent. We will get back to you soon.",
+              },
+            },
+            footer: {
+              copyright:
+                '© 2025 VNDPay. An entry for the "Unification Journey" contest.',
+            },
+            modal: {
+              tabs: { overview: "Overview", history: "History", tips: "Tips" },
+              no_history: "No history information available.",
+              no_tips: "No tips available.",
+            },
+          },
+        };
 
-          const data = {
-            vi: {
-              destinations: [
+        const data = {
+          vi: {
+            destinations: [
+              {
+                id: "cau-vang",
+                title: "Cầu Vàng",
+                category: "architecture",
+                image: "images/Diem den/cau_vang.png",
+                shortDesc: "Kiệt tác kiến trúc giữa mây ngàn Bà Nà.",
+                fullDesc:
+                  "Nằm ở độ cao hơn 1.400 mét, Cầu Vàng là một điểm nhấn kiến trúc ấn tượng tại Sun World Bà Nà Hills. Cây cầu dài gần 150 mét, uốn lượn mềm mại như một dải lụa vàng được nâng đỡ bởi đôi bàn tay khổng lồ, rêu phong. Công trình tạo ra một lối đi bộ giữa không trung, giữa khung cảnh mờ ảo của mây và núi rừng, mang lại một trải nghiệm siêu thực cho du khách.",
+                history:
+                  "Được khánh thành vào tháng 6 năm 2018, Cầu Vàng nhanh chóng gây tiếng vang toàn cầu. Tạp chí TIME đã vinh danh nó trong top 100 điểm đến tuyệt vời nhất thế giới, góp phần quan trọng đưa du lịch Đà Nẵng lên một tầm cao mới.",
+                tips: "Nên đi vào buổi sáng sớm (trước 9h) hoặc chiều muộn (sau 16h) để tránh đông người và có cơ hội chụp ảnh với mây. Mặc thêm áo khoác vì thời tiết trên Bà Nà khá lạnh, kể cả vào mùa hè.",
+              },
+              {
+                id: "cau-rong",
+                title: "Cầu Rồng",
+                category: "architecture",
+                image: "images/Diem den/cau_rong.png",
+                shortDesc:
+                  "Biểu tượng của Đà Nẵng với màn trình diễn phun lửa, phun nước.",
+                fullDesc:
+                  "Với chiều dài 666 mét và 6 làn xe, Cầu Rồng không chỉ là một công trình giao thông trọng yếu bắc qua sông Hàn mà còn là biểu tượng cho khát vọng vươn xa của Đà Nẵng. Cầu được thiết kế theo hình dáng một con rồng thời Lý đang uốn lượn bay ra biển lớn, thể hiện sự mạnh mẽ và phát triển.",
+                history:
+                  "Cầu được khởi công xây dựng vào ngày 19/07/2009 và chính thức khánh thành vào ngày 29/03/2013, nhân kỷ niệm 38 năm ngày giải phóng thành phố Đà Nẵng. Công trình đã nhận được nhiều giải thưởng kiến trúc quốc tế danh giá.",
+                tips: "Màn trình diễn phun lửa (9 lượt) và phun nước (3 lượt) diễn ra vào 21:00 mỗi tối thứ Sáu, thứ Bảy và Chủ Nhật. Vị trí đẹp nhất để xem là đường Trần Hưng Đạo, các quán cà phê tầng thượng gần đó, hoặc ngay trên du thuyền sông Hàn.",
+              },
+              {
+                id: "ba-na-hills",
+                title: "Bà Nà Hills",
+                category: "nature",
+                image: "images/Diem den/ba_na_hills.png",
+                shortDesc: "“Châu Âu thu nhỏ” trên đỉnh núi Chúa.",
+                fullDesc:
+                  "Nằm trên đỉnh núi Chúa ở độ cao 1.487m, Bà Nà Hills là một khu du lịch phức hợp hàng đầu Việt Nam. Nơi đây sở hữu khí hậu mát mẻ quanh năm, được ví như “Đà Lạt của miền Trung”. Du khách sẽ được trải nghiệm bốn mùa trong một ngày và chiêm ngưỡng các công trình kiến trúc độc đáo như Làng Pháp, Hầm rượu Debay, Vườn hoa Le Jardin D'Amour và Cầu Vàng.",
+                history:
+                  "Bà Nà được người Pháp phát hiện vào năm 1901 và xây dựng thành khu nghỉ dưỡng cho các quan chức Pháp vào đầu thế kỷ 20. Sau thời gian bị lãng quên, Sun Group đã đầu tư và tái thiết Bà Nà Hills thành một khu du lịch đẳng cấp quốc tế từ năm 2007.",
+                tips: "Nên mua vé online để tránh xếp hàng. Hãy thử trải nghiệm Tàu hỏa leo núi số 2 để di chuyển giữa các khu vực. Đừng quên mang theo bản đồ khu du lịch để không bỏ lỡ các điểm tham quan và các show diễn nghệ thuật.",
+              },
+              {
+                id: "my-khe",
+                title: "Bãi biển Mỹ Khê",
+                category: "nature",
+                image: "images/Diem den/bai_bien_my_khe.png",
+                shortDesc: "Một trong những bãi biển quyến rũ nhất hành tinh.",
+                fullDesc:
+                  "Với đường bờ biển dài, bãi cát trắng mịn và làn nước trong xanh, ấm áp, Mỹ Khê là điểm đến lý tưởng cho các hoạt động nghỉ dưỡng và thể thao biển. Bãi biển được bao quanh bởi hàng dừa thơ mộng, sóng biển ôn hòa, rất an toàn cho cả trẻ em và người lớn.",
+                history:
+                  "Trong thời kỳ chiến tranh Việt Nam, Mỹ Khê là một địa điểm quen thuộc với các binh sĩ Mỹ. Sau này, với tiềm năng du lịch vượt trội, bãi biển được đầu tư phát triển và trở nên nổi tiếng toàn cầu khi được Tạp chí Forbes vinh danh năm 2005.",
+                tips: "Thời điểm lý tưởng để tắm biển là buổi sáng sớm hoặc chiều muộn. Dọc bờ biển có rất nhiều nhà hàng hải sản tươi ngon với giá cả phải chăng. Bạn cũng có thể thử các môn thể thao dưới nước như lướt ván, dù lượn.",
+              },
+              {
+                id: "ngu-hanh-son",
+                title: "Ngũ Hành Sơn",
+                category: "nature",
+                image: "images/Diem den/ngu_hanh_son.png",
+                shortDesc:
+                  "Quần thể 5 ngọn núi đá vôi mang vẻ đẹp tâm linh huyền bí.",
+                fullDesc:
+                  "Ngũ Hành Sơn là một kiệt tác của thiên nhiên với 5 ngọn núi (Kim, Mộc, Thủy, Hỏa, Thổ) tượng trưng cho năm yếu tố của vũ trụ. Nơi đây là sự kết hợp hài hòa giữa cảnh quan thiên nhiên và các công trình văn hóa tâm linh, với hệ thống hang động, chùa chiền cổ kính. Ngọn Thủy Sơn là ngọn núi lớn và đẹp nhất, thường được du khách lựa chọn để khám phá.",
+                history:
+                  "Theo truyền thuyết Chăm Pa, 5 ngọn núi được tạo ra từ 5 mảnh vỡ của quả trứng rồng. Nơi đây đã từng là một địa điểm tâm linh quan trọng của người Chăm và sau này là của người Việt, đồng thời là căn cứ cách mạng trong các cuộc kháng chiến.",
+                tips: "Nên mang giày thể thao thoải mái để tiện leo trèo. Có thang máy với giá vé 15.000 VNĐ/chiều cho những ai không muốn leo bộ lên Thủy Sơn. Đừng quên ghé thăm Làng nghề đá mỹ nghệ Non Nước dưới chân núi.",
+              },
+              {
+                id: "sun-wheel",
+                title: "Sun Wheel",
+                category: "architecture",
+                image: "images/Diem den/sun_wheel.png",
+                shortDesc: "Trải nghiệm ngắm toàn cảnh Đà Nẵng từ độ cao 115m.",
+                fullDesc:
+                  "Tọa lạc tại Công viên Châu Á (Asia Park), Sun Wheel là một trong 10 vòng quay cao nhất thế giới. Với 64 cabin, mỗi cabin chở được 6 người, một vòng quay kéo dài 15 phút, đủ thời gian để bạn chiêm ngưỡng toàn cảnh Đà Nẵng rực rỡ về đêm, từ những cây cầu lung linh đến thành phố sôi động.",
+                history:
+                  "Được khánh thành vào năm 2014, Sun Wheel nhanh chóng trở thành một biểu tượng giải trí hiện đại của thành phố, là điểm nhấn quan trọng trong dự án Công viên Châu Á, một công viên văn hóa kết hợp nhiều nét đặc trưng của các quốc gia châu Á.",
+                tips: "Thời điểm lý tưởng nhất để trải nghiệm Sun Wheel là vào buổi tối khi thành phố đã lên đèn. Vé vào cổng Asia Park đã bao gồm vé Sun Wheel và nhiều trò chơi khác. Hãy kết hợp tham quan các khu vực văn hóa trong công viên.",
+              },
+              {
+                id: "ban-dao-son-tra",
+                title: "Bán đảo Sơn Trà",
+                category: "nature",
+                image: "images/Diem den/ban_dao_son_tra.png",
+                shortDesc:
+                  "“Lá phổi xanh” của thành phố và là nhà của Voọc chà vá chân nâu.",
+                fullDesc:
+                  "Bán đảo Sơn Trà là một khu bảo tồn thiên nhiên đa dạng sinh học, nơi có khu rừng nguyên sinh với hệ động thực vật phong phú, đặc biệt là loài Voọc chà vá chân nâu quý hiếm. Những con đường uốn lượn quanh bán đảo sẽ đưa bạn đến với những cảnh quan tuyệt đẹp, từ núi cao hùng vĩ đến biển xanh bao la.",
+                history:
+                  "Trong lịch sử, Sơn Trà có vị trí quân sự chiến lược, từng được mệnh danh là “Mắt thần Đông Dương”. Ngày nay, nơi đây được bảo tồn và phát triển du lịch sinh thái bền vững, trở thành điểm đến không thể bỏ lỡ của Đà Nẵng.",
+                tips: "Bạn có thể thuê xe máy để khám phá trọn vẹn vẻ đẹp của bán đảo. Các điểm nên ghé thăm bao gồm Chùa Linh Ứng, Đỉnh Bàn Cờ, Cây Đa Ngàn Năm. Hãy lái xe cẩn thận vì đường khá dốc và cua gấp.",
+              },
+              {
+                id: "chua-linh-ung",
+                title: "Chùa Linh Ứng",
+                category: "culture",
+                image: "images/Diem den/chua_linh_ung.png",
+                shortDesc:
+                  "Ngôi chùa trên bán đảo Sơn Trà với tượng Quán Thế Âm cao nhất Việt Nam.",
+                fullDesc:
+                  "Chùa Linh Ứng Bãi Bụt - Sơn Trà là ngôi chùa lớn và mới nhất trong 3 ngôi “Linh Ứng Tự” của Đà Nẵng. Chùa tọa lạc trên một ngọn đồi, với lưng tựa núi, mặt hướng ra biển, tạo nên một khung cảnh uy nghiêm và thanh tịnh. Điểm nhấn chính là tượng Quán Thế Âm Bồ Tát cao 67m, đứng trên đài sen đường kính 35m.",
+                history:
+                  "Chùa được khởi công xây dựng vào năm 2004 và khánh thành vào năm 2010. Tương truyền, vào thời vua Minh Mạng, có một pho tượng Phật từ biển trôi vào đây, người dân đã lập am thờ tự và từ đó sóng yên biển lặng. Đây cũng là lý do chùa được xây dựng tại vị trí này.",
+                tips: "Mặc trang phục lịch sự, kín đáo khi vào chùa. Giữ im lặng và không gây ồn ào. Từ sân chùa, bạn có thể ngắm nhìn toàn cảnh thành phố và bãi biển Mỹ Khê.",
+              },
+              {
+                id: "hoi-an",
+                title: "Phố cổ Hội An",
+                category: "culture",
+                image: "images/Diem den/pho_co_hoi_an.png",
+                shortDesc: "Di sản văn hóa thế giới với vẻ đẹp vượt thời gian.",
+                fullDesc:
+                  "Hội An là một bức tranh sống động về một thương cảng quốc tế sầm uất thế kỷ 16-17. Đô thị cổ này quyến rũ du khách bởi những ngôi nhà tường vàng, mái ngói âm dương rêu phong, những con hẻm nhỏ và những chiếc đèn lồng rực rỡ về đêm. Không gian hoài cổ, yên bình nơi đây mang lại cảm giác thư thái lạ thường.",
+                history:
+                  "Là một Di sản Văn hóa Thế giới được UNESCO công nhận năm 1999, Hội An là một ví dụ điển hình được bảo tồn đặc biệt tốt về một thương cảng Đông Nam Á. Kiến trúc và quy hoạch đường phố của nó phản ánh sự giao thoa của các nền văn hóa bản địa và nước ngoài.",
+                tips: "Hãy thử đi thuyền trên sông Hoài và thả đèn hoa đăng để cầu may mắn. Đừng bỏ lỡ các món ăn đặc sản như Cao Lầu, Mì Quảng, Cơm Gà. Vé tham quan phố cổ có giá trị trong suốt thời gian lưu trú.",
+              },
+              {
+                id: "nui-than-tai",
+                title: "Công viên núi Thần Tài",
+                category: "nature",
+                image: "images/Diem den/nui_than_tai.png",
+                shortDesc:
+                  "Khu du lịch sinh thái kết hợp nghỉ dưỡng và tắm khoáng nóng.",
+                fullDesc:
+                  "Nằm giữa khu bảo tồn Bà Nà Núi Chúa, công viên suối khoáng nóng Núi Thần Tài là điểm đến lý tưởng để thư giãn và phục hồi sức khỏe. Nơi đây cung cấp các dịch vụ đa dạng như tắm khoáng nóng, tắm bùn, tắm Onsen theo phong cách Nhật Bản, spa, và một công viên nước quy mô lớn.",
+                history:
+                  "Phát triển trên một mỏ nước khoáng nóng tự nhiên được phát hiện trong lòng núi, khu du lịch này được xây dựng với mục tiêu trở thành một điểm đến du lịch sức khỏe và giải trí đẳng cấp, kết hợp hài hòa với thiên nhiên.",
+                tips: "Nên mang theo đồ bơi, khăn tắm và các vật dụng cá nhân. Gói dịch vụ thường bao gồm nhiều hoạt động, hãy xem kỹ để chọn gói phù hợp. Trải nghiệm luộc trứng trong dòng suối khoáng nóng là một hoạt động thú vị.",
+              },
+            ],
+            culture: {
+              festivals: [
                 {
-                  id: "cau-vang",
-                  title: "Cầu Vàng",
-                  category: "architecture",
-                  image: "images/Diem den/cau_vang.png",
-                  shortDesc: "Kiệt tác kiến trúc giữa mây ngàn Bà Nà.",
-                  fullDesc:
-                    "Nằm ở độ cao hơn 1.400 mét, Cầu Vàng là một điểm nhấn kiến trúc ấn tượng tại Sun World Bà Nà Hills. Cây cầu dài gần 150 mét, uốn lượn mềm mại như một dải lụa vàng được nâng đỡ bởi đôi bàn tay khổng lồ, rêu phong. Công trình tạo ra một lối đi bộ giữa không trung, giữa khung cảnh mờ ảo của mây và núi rừng, mang lại một trải nghiệm siêu thực cho du khách.",
-                  history:
-                    "Được khánh thành vào tháng 6 năm 2018, Cầu Vàng nhanh chóng gây tiếng vang toàn cầu. Tạp chí TIME đã vinh danh nó trong top 100 điểm đến tuyệt vời nhất thế giới, góp phần quan trọng đưa du lịch Đà Nẵng lên một tầm cao mới.",
-                  tips: "Nên đi vào buổi sáng sớm (trước 9h) hoặc chiều muộn (sau 16h) để tránh đông người và có cơ hội chụp ảnh với mây. Mặc thêm áo khoác vì thời tiết trên Bà Nà khá lạnh, kể cả vào mùa hè.",
-                }
-                // Thêm các địa điểm khác của bạn vào đây
-              ]
+                  title: "Lễ hội Quán Thế Âm",
+                  desc: "Diễn ra vào ngày 19/2 Âm lịch tại Ngũ Hành Sơn, là lễ hội Phật giáo lớn, cầu quốc thái dân an.",
+                  image: "images/Van hoa/Lễ hội Quán Thế Âm.png",
+                },
+                {
+                  title: "Lễ hội Cầu Ngư",
+                  desc: "Tổ chức vào tháng 2-4 Âm lịch tại các làng chài, cầu mong một mùa biển bội thu, an toàn.",
+                  image: "images/Van hoa/Lễ Cầu Ngư.png",
+                },
+                {
+                  title: "Hát Bài Chòi",
+                  desc: "Di sản UNESCO, là nghệ thuật hát đối và trò chơi dân gian diễn ra dịp lễ Tết bên sông Hàn.",
+                  image: "images/Van hoa/bài chòi.png",
+                },
+                {
+                  title: "Pháo hoa Quốc tế (DIFF)",
+                  desc: "Sự kiện thường niên vào tháng 6-7, nơi các quốc gia trình diễn pháo hoa nghệ thuật rực rỡ.",
+                  image: "images/Van hoa/DIFF.png",
+                },
+                {
+                  title: "Lễ hội Đèn lồng",
+                  desc: "Không gian lung linh, huyền ảo vào dịp Tết và Trung Thu tại Cầu Tình Yêu, đường Bạch Đằng.",
+                  image: "images/Van hoa/lễ hội đèn lồng.png",
+                },
+              ],
+              heritage: {
+                nonNuoc: {
+                  title: "Làng đá Non Nước",
+                  desc: "Với hơn 400 năm lịch sử, làng nghề dưới chân Ngũ Hành Sơn là nơi kết tinh kỹ thuật điêu khắc dân gian và tinh thần lao động cần mẫn, tạo ra những sản phẩm đá mỹ nghệ tinh xảo.",
+                  image: "images/Van hoa/làng đá mỹ nghệ non nước.png",
+                },
+                chamMuseum: {
+                  title: "Bảo tàng Điêu khắc Chăm",
+                  desc: "Là bảo tàng duy nhất trên thế giới về nghệ thuật Chăm, lưu giữ hơn 2.000 hiện vật. Đây là kho báu giúp khám phá một nền văn minh rực rỡ từng tồn tại ở miền Trung Việt Nam.",
+                  image: "images/Van hoa/bảo tàng chăm.png",
+                },
+              },
             },
-            en: {
-              destinations: [
-                 {
-                  id: "cau-vang",
-                  title: "Golden Bridge",
-                  category: "architecture",
-                  image: "images/Diem den/cau_vang.png",
-                  shortDesc: "An architectural masterpiece amidst the clouds of Ba Na.",
-                  fullDesc: "Located at an altitude of over 1,400 meters, the Golden Bridge is an impressive architectural highlight at Sun World Ba Na Hills. Spanning nearly 150 meters, the bridge curves softly like a golden silk strip supported by giant, moss-covered hands. It creates a walkway in the sky, amidst the misty scenery of mountains and forests, offering a surreal experience for visitors.",
-                  history: "Inaugurated in June 2018, the Golden Bridge quickly gained global fame. TIME magazine named it one of the World's 100 Greatest Places, significantly elevating Da Nang's tourism status.",
-                  tips: "Visit early in the morning (before 9 AM) or late afternoon (after 4 PM) to avoid crowds and catch the clouds. Bring a light jacket as it can get chilly on Ba Na Hills, even in summer."
-                }
-              ]
+            cuisine: [
+              {
+                id: "my-quang",
+                title: "Mì Quảng",
+                image: "images/Am thuc/my_quang.png",
+                desc: "Mì Quảng là món ăn đặc trưng của Đà Nẵng - Quảng Nam, gồm sợi mì to bản, nước dùng sền sệt ít nhưng đậm đà, ăn kèm thịt, tôm, trứng, rau sống và bánh tráng mè nướng.",
+                flavor:
+                  "Đậm vị, hơi béo, cay nhẹ, hài hòa giữa các nguyên liệu, ăn no mà không ngán.",
+                locations: [
+                  "Mì Quảng Bà Mua - 19 Trần Bình Trọng",
+                  "Mì Quảng 1A - 1A Hải Phòng",
+                  "Mì Quảng Thi – 251 Hoàng Diệu",
+                  "Mì Quảng Bà Vị – 166 Lê Đình Dương",
+                  "Mì Quảng Dung - 121 Đống Đa",
+                ],
+              },
+              {
+                id: "banh-trang-thit-heo",
+                title: "Bánh tráng cuốn thịt heo",
+                image: "images/Am thuc/banh_trang_cuon_thit_heo.png",
+                desc: "Thịt heo hai đầu da thái mỏng, cuốn cùng bánh tráng, rau sống và chấm với mắm nêm đậm đà.",
+                flavor:
+                  "Tươi mát, thanh nhẹ, nổi bật bởi vị mắm nêm đặc trưng và rau sống đa dạng.",
+                locations: [
+                  "Quán Trần - 4 Lê Duẩn",
+                  "Quán Mậu – 35 Đỗ Thúc Tịnh",
+                  "Quán Bà Hường - 364 Hoàng Diệu",
+                  "Quán Đại Lộc – 277 Đống Đa",
+                  "Bánh tráng cuốn thịt heo Quê Xưa - 176 Nguyễn Hoàng",
+                ],
+              },
+              {
+                id: "bun-mam-nem",
+                title: "Bún mắm nêm",
+                image: "images/Am thuc/bun_mam_nem.png",
+                desc: "Bún tươi, thịt luộc, nem chua, rau sống và mắm nêm pha tỏi ớt - món ăn đường phố nổi tiếng Đà Nẵng.",
+                flavor:
+                  "Mặn, ngọt, chua, cay, nồng - mắm nêm là linh hồn của món ăn, rất đặc trưng.",
+                locations: [
+                  "Bún mắm Bà Đông - K23/14 Trần Kế Xương",
+                  "Bún mắm Vân - 23/14 Trần Kế Xương",
+                  "Bún mắm nêm Ngọc - 20 Đoàn Thị Điểm",
+                  "Bún mắm Dì Liên - 52 Trần Bình Trọng",
+                  "Bún mắm Bà Thuyên - 424 Trưng Nữ Vương",
+                ],
+              },
+              {
+                id: "banh-xeo-nem-lui",
+                title: "Bánh xèo - Nem lụi",
+                image: "images/Am thuc/banh_xeo_nem_lui.png",
+                desc: "Bánh xèo vàng giòn nhân tôm thịt giá, ăn kèm rau sống, bánh tráng và nem lụi nướng chấm nước lèo.",
+                flavor:
+                  "Giòn rụm, béo, thơm mùi nghệ, hòa quyện cùng rau sống và nước chấm đặc trưng.",
+                locations: [
+                  "Bánh xèo Bà Dưỡng - K280/23 Hoàng Diệu",
+                  "Bánh xèo Tôm Nhảy - 140 Nguyễn Đức Trung",
+                  "Bánh xèo Cô Ba - 248 Trưng Nữ Vương",
+                  "Quán Xuân - 469 Hải Phòng",
+                  "Bánh xèo miền Trung - 7 Hải Phòng",
+                ],
+              },
+              {
+                id: "che-thai-lien",
+                title: "Chè Thái Liên",
+                image: "images/Am thuc/che_thai_lien.png",
+                desc: "Món chè mát lạnh gồm sầu riêng, thạch, trái cây, hạt é, nước cốt dừa - đặc sản giải nhiệt trứ danh.",
+                flavor:
+                  "Ngọt, béo, thơm mùi sầu riêng, giòn mát từ topping và thạch.",
+                locations: [
+                  "Chè Liên – 189 Hoàng Diệu",
+                  "Chè Liên - 175 Hải Phòng",
+                  "Chè Liên - 320 Điện Biên Phủ",
+                  "Chè Thái Mỹ – 28 Pasteur",
+                  "Chè Thái Tâm - 147 Lê Duẩn",
+                ],
+              },
+              {
+                id: "cao-lau",
+                title: "Cao lầu",
+                image: "images/Am thuc/cao_lau.png",
+                desc: "Món mì đặc sản xứ Quảng với sợi cao lầu vàng dai, thịt xá xíu, rau sống Trà Quế và tóp mỡ, chan ít nước dùng.",
+                flavor:
+                  "Mặn nhẹ, thơm mùi tro củi, sợi mì dai lạ, không giống mì Quảng hay bún.",
+                locations: [
+                  "Cao lầu Hoài Phố - 255 Nguyễn Chí Thanh",
+                  "Quán Thanh - 39 Phạm Hồng Thái",
+                  "Cao lầu Bé Hội An – 44 Lê Lợi",
+                  "Cao lầu Hội An – 128 Nguyễn Tri Phương",
+                  "Chợ Bắc Mỹ An (gian hàng phía trong)",
+                ],
+              },
+              {
+                id: "goi-ca-nam-o",
+                title: "Gỏi cá Nam Ô",
+                image: "images/Am thuc/goi_ca_nam_o.png",
+                desc: "Gỏi cá sống từ cá trích/cá mai, trộn thính và rau thơm, ăn kèm bánh tráng cuốn và mắm nêm gừng.",
+                flavor: "Tươi, bùi, cay nồng - ăn kèm rau sống rất đậm đà.",
+                locations: [
+                  "Gỏi cá Sáu Hào - 130 Nguyễn Tất Thành",
+                  "Gỏi cá Thanh Hương - 102 Lê Độ",
+                  "Gỏi cá Nam Ô – 972 Nguyễn Lương Bằng",
+                  "Quán Hải sản Bé Anh – 2 Phạm Văn Đồng",
+                  "Quán Bà Lý - 41 Ngô Thì Nhậm",
+                ],
+              },
+              {
+                id: "bun-cha-ca",
+                title: "Bún chả cá",
+                image: "images/Am thuc/bun_cha_ca.png",
+                desc: "Bún tươi với chả cá chiên, hấp, nước lèo nấu từ xương cá, cà chua, thơm.",
+                flavor:
+                  "Ngọt thanh, thơm, cay nhẹ, chả cá dai ngon - món ăn sáng phổ biến tại Đà Nẵng.",
+                locations: [
+                  "Bún chả cá Bà Lữ - 319 Hùng Vương",
+                  "Bún chả cá Ông Tạ - 113A Nguyễn Chí Thanh",
+                  "Bún chả cá Hờn - 113/3 Nguyễn Chí Thanh",
+                  "Bún chả cá Bà Phiến – 63 Lê Hồng Phong",
+                  "Bún chả cá Nguyễn Chí Thanh - 109 Nguyễn Chí Thanh",
+                ],
+              },
+              {
+                id: "hai-san",
+                title: "Hải sản Đà Nẵng",
+                image: "images/Am thuc/hai_san_da_nang.png",
+                desc: "Tươi sống, chế biến tại chỗ: tôm hùm, ghẹ, mực, hàu, nghêu, sò - chế biến hấp, nướng, rang me, cháy tỏi.",
+                flavor:
+                  "Tươi, ngọt, đậm đà - gia vị vừa phải để giữ vị nguyên bản hải sản.",
+                locations: [
+                  "Hải sản Bé Mặn - Lô 14 Võ Nguyên Giáp",
+                  "Hải sản Năm Đảnh – K139/H59/38 Trần Quang Khải",
+                  "Hải sản Bà Thôi – 96 Lê Đình Dương",
+                  "Hải sản Bé Anh – 2 Phạm Văn Đồng",
+                  "Quán Biển Rạng - 51 Võ Nguyên Giáp",
+                ],
+              },
+              {
+                id: "kem-bo",
+                title: "Kem bơ",
+                image: "images/Am thuc/kem_bo.png",
+                desc: "Sinh tố bơ xay mịn, ăn cùng kem dừa, đậu phộng – món tráng miệng mát lạnh 'gây nghiện' ở Đà Nẵng.",
+                flavor:
+                  "Béo ngậy, mát lạnh, thơm đặc trưng của bơ chín và kem sữa.",
+                locations: [
+                  "Kem bơ Cô Vân – Chợ Bắc Mỹ An",
+                  "Kem bơ Phạm Tứ – 195 Phạm Tứ",
+                  "Kem bơ Thanh – 47 Lê Duẩn",
+                  "Kem bơ Bảo – 41 Lê Hữu Trác",
+                  "Kem bơ Nguyễn Văn Linh – số 17 Nguyễn Văn Linh",
+                ],
+              },
+            ],
+            history: [
+              {
+                id: "history-champa",
+                title: "Thế kỷ IV - XV: Vương quốc Champa",
+                text: "Đà Nẵng nguyên là lãnh thổ phía Bắc Champa, được biết đến với tên gọi trong tiếng Chăm có nghĩa là 'sông lớn'. Nơi đây từng là trung tâm tín ngưỡng Hindu, minh chứng qua các hiện vật trưng bày tại Bảo tàng Điêu khắc Chăm.",
+                imageId: "champa",
+              },
+              {
+                id: "history-port",
+                title: "Thế kỷ XVI - XIX: Thương cảng quốc tế",
+                text: "Trở thành đầu mối giao thương quan trọng, Đà Nẵng là 'tiền cảng' của Hội An, dần thay thế nơi này nhờ khả năng đón tàu lớn dễ dàng.",
+                imageId: "port",
+              },
+              {
+                id: "history-french",
+                title: "Năm 1858: Liên quân Pháp - Tây Ban Nha nổ súng",
+                text: "Đà Nẵng là nơi liên quân Pháp - Tây Ban Nha nổ súng mở đầu cuộc xâm lược Việt Nam, đánh dấu mốc khởi đầu cuộc kháng chiến chống thực dân của dân tộc.",
+                imageId: "french",
+              },
+              {
+                id: "history-war",
+                title: "Thế kỷ XX: Kháng chiến chống Mỹ và Giải phóng",
+                text: "Đà Nẵng trở thành căn cứ quân sự chiến lược lớn thứ hai của Mỹ tại miền Nam. Ngày 29/3/1975, thành phố được hoàn toàn giải phóng, kết thúc 117 năm đô hộ và chiến tranh.",
+                imageId: "war",
+              },
+              {
+                id: "history-modern",
+                title: "1997 - Nay: Thành phố trực thuộc Trung ương",
+                text: "Ngày 1/1/1997, Đà Nẵng chính thức được tách khỏi tỉnh Quảng Nam - Đà Nẵng, trở thành một trong năm thành phố trực thuộc Trung ương. Đây là bước ngoặt lịch sử, đánh dấu sự chuyển mình mạnh mẽ về mọi mặt.",
+                imageId: "modern",
+              },
+            ],
+          },
+          en: {
+            destinations: [
+              {
+                id: "cau-vang",
+                title: "Golden Bridge",
+                category: "architecture",
+                image: "images/Diem den/ENG/golden_bridge.png", // <-- ĐÃ CẬP NHẬT
+                shortDesc:
+                  "A masterpiece of architecture amidst the clouds of Ba Na.",
+                fullDesc:
+                  "Located at an altitude of over 1,400 meters, the Golden Bridge is an impressive architectural highlight at Sun World Ba Na Hills. The bridge is nearly 150 meters long, winding gracefully like a golden silk ribbon supported by two giant, mossy hands. The structure creates a walkway in mid-air, amidst the misty scenery of clouds and mountains, offering a surreal experience for visitors.",
+                history:
+                  "Inaugurated in June 2018, the Golden Bridge quickly gained global recognition. TIME magazine honored it in the top 100 greatest places in the world, significantly contributing to elevating Da Nang's tourism to a new level.",
+                tips: "You should go early in the morning (before 9 AM) or late in the afternoon (after 4 PM) to avoid crowds and have a chance to take photos with the clouds. Bring an extra jacket as the weather on Ba Na is quite cold, even in summer.",
+              },
+              {
+                id: "cau-rong",
+                title: "Dragon Bridge",
+                category: "architecture",
+                image: "images/Diem den/ENG/dragon_bridge.png", // <-- ĐÃ CẬP NHẬT
+                shortDesc:
+                  "A symbol of Da Nang with a fire and water breathing show.",
+                fullDesc:
+                  "With a length of 666 meters and 6 lanes, the Dragon Bridge is not only a key traffic artery across the Han River but also a symbol of Da Nang's aspiration for growth. The bridge is designed in the shape of a Ly Dynasty dragon, powerfully winding its way to the sea, representing strength and development.",
+                history:
+                  "Construction of the bridge began on July 19, 2009, and it was officially inaugurated on March 29, 2013, on the 38th anniversary of the liberation of Da Nang. The project has received numerous prestigious international architectural awards.",
+                tips: "The fire (9 times) and water (3 times) breathing show takes place at 9:00 PM every Friday, Saturday, and Sunday. The best viewing spots are on Tran Hung Dao Street, nearby rooftop cafes, or right on a Han River cruise.",
+              },
+              {
+                id: "ba-na-hills",
+                title: "Ba Na Hills",
+                category: "nature",
+                image: "images/Diem den/ENG/ba_na_hills.png", // <-- ĐÃ CẬP NHẬT
+                shortDesc: "A 'miniature Europe' on the peak of Chua Mountain.",
+                fullDesc:
+                  "Located on the peak of Chua Mountain at an altitude of 1,487m, Ba Na Hills is a leading resort complex in Vietnam. It boasts a year-round cool climate, likened to a 'Da Lat of the Central Region'. Visitors can experience four seasons in one day and admire unique architectural works such as the French Village, Debay Wine Cellar, Le Jardin D'Amour Flower Garden, and the Golden Bridge.",
+                history:
+                  "Ba Na was discovered by the French in 1901 and developed into a resort for French officials in the early 20th century. After a period of neglect, Sun Group invested and rebuilt Ba Na Hills into a world-class tourist destination starting in 2007.",
+                tips: "You should buy tickets online to avoid queuing. Try the No. 2 funicular to move between areas. Don't forget to bring a map of the resort to not miss any attractions and art shows.",
+              },
+              {
+                id: "my-khe",
+                title: "My Khe Beach",
+                category: "nature",
+                image: "images/Diem den/ENG/my_khe_beach.png", // <-- ĐÃ CẬP NHẬT
+                shortDesc: "One of the most charming beaches on the planet.",
+                fullDesc:
+                  "With a long coastline, fine white sand, and warm, clear blue water, My Khe is an ideal destination for beach relaxation and sports. The beach is fringed with poetic coconut trees and has gentle waves, making it very safe for both children and adults.",
+                history:
+                  "During the Vietnam War, My Khe was a familiar spot for American soldiers. Later, with its outstanding tourism potential, the beach was developed and gained global fame when it was honored by Forbes Magazine in 2005.",
+                tips: "The ideal time for swimming is early morning or late afternoon. There are many fresh seafood restaurants along the coast with reasonable prices. You can also try water sports like surfing and parasailing.",
+              },
+              {
+                id: "ngu-hanh-son",
+                title: "Marble Mountains",
+                category: "nature",
+                image: "images/Diem den/ENG/marble_mountains.png", // <-- ĐÃ CẬP NHẬT
+                shortDesc:
+                  "A cluster of 5 limestone mountains with a mysterious spiritual beauty.",
+                fullDesc:
+                  "The Marble Mountains are a masterpiece of nature with 5 mountains (Metal, Wood, Water, Fire, Earth) symbolizing the five elements of the universe. It is a harmonious combination of natural landscapes and spiritual cultural works, with a system of caves and ancient pagodas. Thuy Son (Water Mountain) is the largest and most beautiful mountain, often chosen by tourists for exploration.",
+                history:
+                  "According to Champa legend, the 5 mountains were created from the 5 fragments of a dragon's egg. This place was once an important spiritual site for the Cham people and later for the Vietnamese, and also served as a revolutionary base during the resistance wars.",
+                tips: "Wear comfortable sports shoes for easy climbing. There is an elevator with a ticket price of 15,000 VND/way for those who do not want to climb Thuy Son. Don't forget to visit the Non Nuoc Stone Carving Village at the foot of the mountain.",
+              },
+              {
+                id: "sun-wheel",
+                title: "Sun Wheel",
+                category: "architecture",
+                image: "images/Diem den/ENG/sun_wheel.png", // <-- ĐÃ CẬP NHẬT
+                shortDesc:
+                  "Experience a panoramic view of Da Nang from a height of 115m.",
+                fullDesc:
+                  "Located at Asia Park, the Sun Wheel is one of the ten tallest Ferris wheels in the world. With 64 cabins, each carrying 6 people, a single rotation takes 15 minutes, enough time for you to admire the panoramic view of a sparkling Da Nang at night, from the glittering bridges to the vibrant city.",
+                history:
+                  "Inaugurated in 2014, the Sun Wheel quickly became a modern entertainment symbol of the city, an important highlight of the Asia Park project, a cultural park that combines many characteristic features of Asian countries.",
+                tips: "The best time to experience the Sun Wheel is in the evening when the city is lit up. The entrance ticket to Asia Park includes the Sun Wheel and many other games. Combine it with a visit to the cultural areas in the park.",
+              },
+              {
+                id: "ban-dao-son-tra",
+                title: "Son Tra Peninsula",
+                category: "nature",
+                image: "images/Diem den/ENG/son_tra_peninsula.png", // <-- ĐÃ CẬP NHẬT
+                shortDesc:
+                  "The 'green lung' of the city and home to the Red-shanked Douc.",
+                fullDesc:
+                  "The Son Tra Peninsula is a biodiverse nature reserve, home to a primary forest with a rich ecosystem of flora and fauna, especially the rare Red-shanked Douc langur. The winding roads around the peninsula will lead you to beautiful landscapes, from majestic high mountains to the vast blue sea.",
+                history:
+                  "Historically, Son Tra held a strategic military position, once known as the 'Indochina's Eye'. Today, it is preserved and developed for sustainable ecotourism, becoming an unmissable destination in Da Nang.",
+                tips: "You can rent a motorbike to fully explore the beauty of the peninsula. Recommended spots to visit include Linh Ung Pagoda, Ban Co Peak, and the Thousand-Year-Old Banyan Tree. Drive carefully as the roads are quite steep and have sharp turns.",
+              },
+              {
+                id: "chua-linh-ung",
+                title: "Linh Ung Pagoda",
+                category: "culture",
+                image: "images/Diem den/ENG/linh_ung_pagoda.png", // <-- ĐÃ CẬP NHẬT
+                shortDesc:
+                  "The pagoda on Son Tra Peninsula with the tallest Lady Buddha statue in Vietnam.",
+                fullDesc:
+                  "Linh Ung Pagoda Bai But - Son Tra is the largest and newest of the three 'Linh Ung Tu' pagodas in Da Nang. The pagoda is situated on a hill, leaning against the mountain and facing the sea, creating a majestic and serene setting. The main highlight is the 67m high statue of the Bodhisattva of Mercy, standing on a 35m diameter lotus.",
+                history:
+                  "The pagoda's construction began in 2004 and was inaugurated in 2010. Legend has it that during the reign of King Minh Mang, a Buddha statue washed ashore here. The locals built a shrine to worship it, and from then on, the sea has been calm. This is also the reason the pagoda was built at this location.",
+                tips: "Wear respectful, modest clothing when visiting the pagoda. Keep quiet and do not make noise. From the temple courtyard, you can enjoy a panoramic view of the city and My Khe beach.",
+              },
+              {
+                id: "hoi-an",
+                title: "Hoi An Ancient Town",
+                category: "culture",
+                image: "images/Diem den/ENG/hoi_an_ancient_town.png", // <-- ĐÃ CẬP NHẬT
+                shortDesc:
+                  "A World Cultural Heritage site with timeless beauty.",
+                fullDesc:
+                  "Hoi An is a vivid picture of a bustling international trading port from the 16th-17th centuries. This ancient town charms visitors with its yellow-walled houses, mossy yin-yang tiled roofs, small alleys, and brilliant lanterns at night. The nostalgic, peaceful atmosphere here brings a strange sense of relaxation.",
+                history:
+                  "Recognized as a World Cultural Heritage site by UNESCO in 1999, Hoi An is an exceptionally well-preserved example of a Southeast Asian trading port. Its architecture and street plan reflect the fusion of indigenous and foreign cultures.",
+                tips: "Try taking a boat trip on the Hoai River and releasing a paper lantern for good luck. Don't miss out on specialty dishes like Cao Lau, Mi Quang, and Com Ga. The entrance ticket is valid for the duration of your stay.",
+              },
+              {
+                id: "nui-than-tai",
+                title: "Than Tai Mountain Park",
+                category: "nature",
+                image: "images/Diem den/ENG/nui_than_tai_hot_spring_park.png", // <-- ĐÃ CẬP NHẬT
+                shortDesc:
+                  "An eco-tourism resort combined with hot spring bathing.",
+                fullDesc:
+                  "Nestled within the Ba Na Nui Chua nature reserve, Than Tai Hot Springs Park is an ideal destination for relaxation and health recovery. It offers a variety of services such as hot mineral baths, mud baths, Japanese-style Onsen, a spa, and a large water park.",
+                history:
+                  "Developed on a natural hot mineral spring discovered deep within the mountains, this tourist area was built with the goal of becoming a high-class health and entertainment destination, harmoniously combined with nature.",
+                tips: "You should bring swimwear, a towel, and personal items. Service packages often include many activities, so check carefully to choose a suitable one. Experiencing boiling eggs in the hot mineral stream is a fun activity.",
+              },
+            ],
+            culture: {
+              festivals: [
+                {
+                  title: "Avalokiteshvara Festival",
+                  desc: "Held on the 19th day of the 2nd lunar month at Marble Mountains, this is a major Buddhist festival praying for national peace.",
+                  image: "images/Van hoa/Lễ hội Quán Thế Âm.png",
+                },
+                {
+                  title: "Cau Ngu Festival",
+                  desc: "Organized in the 2nd-4th lunar months in fishing villages, praying for a bountiful and safe fishing season.",
+                  image: "images/Van hoa/Lễ Cầu Ngư.png",
+                },
+                {
+                  title: "Bai Choi Singing",
+                  desc: "A UNESCO Intangible Heritage, a folk art form combining singing duels and a game, held during Tet holidays.",
+                  image: "images/Van hoa/bài chòi.png",
+                },
+                {
+                  title: "International Fireworks Festival (DIFF)",
+                  desc: "An annual event in June-July where countries perform spectacular artistic fireworks displays.",
+                  image: "images/Van hoa/DIFF.png",
+                },
+                {
+                  title: "Lantern Festival",
+                  desc: "A sparkling, magical space during Tet and Mid-Autumn Festival at the Love Bridge and Bach Dang street.",
+                  image: "images/Van hoa/lễ hội đèn lồng.png",
+                },
+              ],
+              heritage: {
+                nonNuoc: {
+                  title: "Non Nuoc Stone Village",
+                  desc: "With over 400 years of history, this craft village at the foot of the Marble Mountains crystallizes folk carving techniques and diligent labor, creating exquisite stone art products.",
+                  image: "images/Van hoa/làng đá mỹ nghệ non nước.png",
+                },
+                chamMuseum: {
+                  title: "Cham Sculpture Museum",
+                  desc: "The world's only museum dedicated to Cham art, housing over 2,000 artifacts. It is a treasure trove for exploring a brilliant civilization that once flourished in Central Vietnam.",
+                  image: "images/Van hoa/bảo tàng chăm.png",
+                },
+              },
+            },
+            cuisine: [
+              {
+                id: "my-quang",
+                title: "Mi Quang",
+                image: "images/Am thuc/my_quang.png",
+                desc: "Mi Quang is the signature dish of Da Nang - Quang Nam, featuring broad rice noodles, a rich but sparse broth, served with pork, shrimp, egg, fresh herbs, and a crispy sesame rice cracker.",
+                flavor:
+                  "Bold, slightly rich, mildly spicy, with a harmonious balance of ingredients, filling without being heavy.",
+                locations: [
+                  "Ba Mua - 19 Tran Binh Trong",
+                  "Mi Quang 1A - 1A Hai Phong",
+                  "Mi Quang Thi – 251 Hoang Dieu",
+                  "Ba Vi – 166 Le Dinh Duong",
+                  "Dung - 121 Dong Da",
+                ],
+              },
+              {
+                id: "banh-trang-thit-heo",
+                title: "Pork Rolls with Rice Paper",
+                image: "images/Am thuc/banh_trang_cuon_thit_heo.png",
+                desc: "Thinly sliced boiled pork, wrapped with rice paper, fresh herbs, and dipped in a pungent fermented fish sauce (mam nem).",
+                flavor:
+                  "Fresh, light, with the distinctive taste of mam nem and a variety of herbs.",
+                locations: [
+                  "Tran Restaurant - 4 Le Duan",
+                  "Mau Restaurant – 35 Do Thuc Tinh",
+                  "Ba Huong - 364 Hoang Dieu",
+                  "Dai Loc – 277 Dong Da",
+                  "Que Xua - 176 Nguyen Hoang",
+                ],
+              },
+              {
+                id: "bun-mam-nem",
+                title: "Vermicelli with Fermented Fish Sauce",
+                image: "images/Am thuc/bun_mam_nem.png",
+                desc: "Rice vermicelli, boiled pork, fermented pork roll, fresh herbs, and mam nem mixed with garlic and chili - a famous street food in Da Nang.",
+                flavor:
+                  "Salty, sweet, sour, spicy, pungent - mam nem is the soul of the dish, very characteristic.",
+                locations: [
+                  "Ba Dong - K23/14 Tran Ke Xuong",
+                  "Van - 23/14 Tran Ke Xuong",
+                  "Ngoc - 20 Doan Thi Diem",
+                  "Di Lien - 52 Tran Binh Trong",
+                  "Ba Thuyen - 424 Trung Nu Vuong",
+                ],
+              },
+              {
+                id: "banh-xeo-nem-lui",
+                title: "Banh Xeo - Nem Lui",
+                image: "images/Am thuc/banh_xeo_nem_lui.png",
+                desc: "Crispy yellow pancake filled with shrimp, pork, and bean sprouts, served with fresh herbs, rice paper, and grilled pork skewers dipped in a special sauce.",
+                flavor:
+                  "Crispy, savory, aromatic with turmeric, balanced by fresh herbs and the rich dipping sauce.",
+                locations: [
+                  "Ba Duong - K280/23 Hoang Dieu",
+                  "Tom Nhay - 140 Nguyen Duc Trung",
+                  "Co Ba - 248 Trung Nu Vuong",
+                  "Xuan - 469 Hai Phong",
+                  "Mien Trung - 7 Hai Phong",
+                ],
+              },
+              {
+                id: "che-thai-lien",
+                title: "Lien's Thai Sweet Soup",
+                image: "images/Am thuc/che_thai_lien.png",
+                desc: "A refreshing dessert with durian, jellies, tropical fruits, basil seeds, and coconut milk - a famous cooling treat.",
+                flavor:
+                  "Sweet, creamy, fragrant with durian, with chewy and cool toppings.",
+                locations: [
+                  "Lien – 189 Hoang Dieu",
+                  "Lien - 175 Hai Phong",
+                  "Lien - 320 Dien Bien Phu",
+                  "My Thai – 28 Pasteur",
+                  "Tam Thai - 147 Le Duan",
+                ],
+              },
+              {
+                id: "cao-lau",
+                title: "Cao Lau",
+                image: "images/Am thuc/cao_lau.png",
+                desc: "A specialty noodle from Quang Nam with thick yellow noodles, char siu pork, Tra Que herbs, and crispy pork cracklings, served with a small amount of broth.",
+                flavor:
+                  "Mildly salty, with the aroma of wood ash, and a unique chewy texture unlike other noodles.",
+                locations: [
+                  "Hoai Pho - 255 Nguyen Chi Thanh",
+                  "Thanh - 39 Pham Hồng Thái",
+                  "Be Hoi An – 44 Le Loi",
+                  "Hoi An Noodles – 128 Nguyen Tri Phuong",
+                  "Bac My An Market (inside food court)",
+                ],
+              },
+              {
+                id: "goi-ca-nam-o",
+                title: "Nam O Fish Salad",
+                image: "images/Am thuc/goi_ca_nam_o.png",
+                desc: "Raw fish salad made from herring or sardine, mixed with roasted rice powder and herbs, served with rice paper and ginger fish sauce.",
+                flavor:
+                  "Fresh, nutty, and spicy - very flavorful when eaten with fresh herbs.",
+                locations: [
+                  "Sau Hao - 130 Nguyen Tat Thanh",
+                  "Thanh Huong - 102 Le Do",
+                  "Nam O – 972 Nguyen Luong Bang",
+                  "Be Anh Seafood – 2 Pham Van Dong",
+                  "Ba Ly - 41 Ngo Thi Nham",
+                ],
+              },
+              {
+                id: "bun-cha-ca",
+                title: "Fish Cake Noodle Soup",
+                image: "images/Am thuc/bun_cha_ca.png",
+                desc: "Rice vermicelli with fried and steamed fish cakes, in a broth made from fish bones, pineapple, and tomato.",
+                flavor:
+                  "Lightly sweet and savory, fragrant, mildly spicy, with chewy fish cakes - a popular breakfast dish.",
+                locations: [
+                  "Ba Lu - 319 Hung Vuong",
+                  "Ong Ta - 113A Nguyen Chi Thanh",
+                  "Hon - 113/3 Nguyen Chi Thanh",
+                  "Ba Phien – 63 Le Hong Phong",
+                  "109 Nguyen Chi Thanh",
+                ],
+              },
+              {
+                id: "hai-san",
+                title: "Da Nang Seafood",
+                image: "images/Am thuc/hai_san_da_nang.png",
+                desc: "Fresh and cooked on the spot: lobster, crab, squid, oysters, clams, scallops - prepared steamed, grilled, tamarind-roasted, or garlic-fried.",
+                flavor:
+                  "Fresh, sweet, and rich - moderately seasoned to preserve the original taste of the seafood.",
+                locations: [
+                  "Be Man - Lot 14 Vo Nguyen Giap",
+                  "Nam Danh – K139/H59/38 Tran Quang Khai",
+                  "Ba Thoi – 96 Lê Đình Dương",
+                  "Be Anh – 2 Pham Van Dong",
+                  "Bien Rang - 51 Vo Nguyen Giap",
+                ],
+              },
+              {
+                id: "kem-bo",
+                title: "Avocado Ice Cream",
+                image: "images/Am thuc/kem_bo.png",
+                desc: "A smooth avocado smoothie served with coconut ice cream and peanuts - an 'addictive' cool dessert in Da Nang.",
+                flavor:
+                  "Creamy, rich, cool, with the characteristic aroma of ripe avocado and creamy ice cream.",
+                locations: [
+                  "Co Van – Bac My An Market",
+                  "Pham Tu – 195 Pham Tu",
+                  "Thanh – 47 Le Duan",
+                  "Bao – 41 Le Huu Trac",
+                  "17 Nguyen Van Linh",
+                ],
+              },
+            ],
+            history: [
+              {
+                id: "history-champa",
+                title: "IV-XV Century: Champa Kingdom",
+                text: "Da Nang was originally the northern territory of Champa, known since the 16th century by a Cham name meaning 'great river' or 'great river mouth'. It was a center of Hindu worship, evidenced by artifacts in the Cham Sculpture Museum.",
+                imageId: "champa",
+              },
+              {
+                id: "history-port",
+                title: "XVI-XIX Century: International Port",
+                text: "Becoming a major trading hub, Da Nang was the 'fore-port' of Hoi An, gradually replacing it due to its ability to accommodate large ships easily.",
+                imageId: "port",
+              },
+              {
+                id: "history-french",
+                title: "1858: French-Spanish Coalition Attacks",
+                text: "In 1858, Da Nang was where the French-Spanish coalition opened fire to begin the invasion of Vietnam, marking the start of the anti-colonial resistance.",
+                imageId: "french",
+              },
+              {
+                id: "history-war",
+                title: "XX Century: Resistance and Liberation",
+                text: "Da Nang became the second-largest strategic military base for the U.S. in South Vietnam. On March 29, 1975, the city was completely liberated, ending 117 years of occupation and war.",
+                imageId: "war",
+              },
+              {
+                id: "history-modern",
+                title: "1997 - Present: Centrally-Governed City",
+                text: "On January 1, 1997, Da Nang was officially separated from Quang Nam - Da Nang province to become one of Vietnam's five centrally-governed cities. This was a historic turning point, marking a strong transformation in all aspects.",
+                imageId: "modern",
+              },
+            ],
+          },
+        };
+
+        const historyImages = {
+          champa:
+            "images/Lich su/than-ho-phap-bao-tang-dieu-khac-cham-danang-fantasticity-com-04.jpg",
+          port: "images/Lich su/images1682966__Thuongcang2.jpg",
+          french: "images/Lich su/tran-da-nang-1858-4.jpg",
+          war: "images/Lich su/c01_BALM.jpg",
+          modern: "images/Lich su/da_nang_hien_dai.jpg",
+        };
+        let currentLanguage = "vi";
+
+        // --- HERO SLIDESHOW ---
+        const initHeroSlideshow = () => {
+          const heroImages = [
+            "images/Trang chu/2.png",
+            "images/Trang chu/3.png",
+            "images/Trang chu/4.png",
+            "images/Trang chu/5.png",
+            "images/Trang chu/6.png",
+            "images/Trang chu/7.png",
+            "images/Trang chu/8.png",
+            "images/Trang chu/9.png",
+            "images/Trang chu/10.png",
+            "images/Trang chu/11.png",
+            "images/Trang chu/12.png",
+          ];
+          const slideshowContainer = document.getElementById("hero-slideshow");
+          heroImages.forEach((src, index) => {
+            const img = document.createElement("img");
+            img.src = src;
+            img.alt = `Cảnh đẹp Đà Nẵng ${index + 1}`;
+            img.className = "absolute inset-0 w-full h-full object-cover";
+            img.style.opacity = index === 0 ? 1 : 0;
+            slideshowContainer.appendChild(img);
+          });
+
+          let currentSlide = 0;
+          const slides = slideshowContainer.children;
+          setInterval(() => {
+            const nextSlide = (currentSlide + 1) % slides.length;
+            gsap.to(slides[currentSlide], {
+              duration: 2,
+              opacity: 0,
+              ease: "power2.inOut",
+            });
+            gsap.to(slides[nextSlide], {
+              duration: 2,
+              opacity: 1,
+              ease: "power2.inOut",
+            });
+            currentSlide = nextSlide;
+          }, 5000); // Đổi ảnh sau mỗi 5 giây
+        };
+        initHeroSlideshow();
+
+        // --- BỘ CHUYỂN NGÔN NGỮ ---
+        let switchLanguage = (lang, force = false) => {
+          if (lang === currentLanguage && !force) return;
+          currentLanguage = lang;
+          document.documentElement.lang = lang;
+          document.querySelectorAll("[data-lang-key]").forEach((el) => {
+            const key = el.dataset.langKey;
+            const keys = key.split(".");
+            let text = languageContent[lang];
+            keys.forEach((k) => {
+              text = text ? text[k] : `[${key}]`;
+            });
+            el.innerHTML = text;
+          });
+          document.querySelectorAll(".lang-switcher button").forEach((btn) => {
+            btn.classList.toggle("active", btn.dataset.lang === lang);
+          });
+          renderFilterButtons();
+          renderDestinations(
+            document.querySelector(".filter-btn.active")?.dataset.filter ||
+              "all"
+          );
+          renderCulture();
+          renderCuisine();
+          renderHistory();
+          renderPlannerOptions();
+        };
+
+        document.querySelectorAll(".lang-switcher button").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (window.Tone && Tone.context.state !== "running") Tone.start();
+            clickSound.triggerAttackRelease("C5", "8n");
+            switchLanguage(btn.dataset.lang);
+          });
+        });
+
+        // --- CẢI TIẾN UI/UX ---
+        const cursorDot = document.querySelector(".cursor-dot");
+        const cursorOutline = document.querySelector(".cursor-outline");
+        window.addEventListener("mousemove", (e) => {
+          const { clientX, clientY } = e;
+          cursorDot.style.left = `${clientX}px`;
+          cursorDot.style.top = `${clientY}px`;
+          cursorOutline.animate(
+            { left: `${clientX}px`, top: `${clientY}px` },
+            { duration: 500, fill: "forwards" }
+          );
+        });
+        const hoverSound = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "sine" },
+          envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.2 },
+          volume: -20,
+        }).toDestination();
+        const clickSound = new Tone.PolySynth(Tone.MembraneSynth, {
+          pitchDecay: 0.01,
+          octaves: 10,
+          oscillator: { type: "sine" },
+          envelope: {
+            attack: 0.001,
+            decay: 0.4,
+            sustain: 0.01,
+            release: 0.4,
+            attackCurve: "exponential",
+          },
+          volume: -10,
+        }).toDestination();
+        document
+          .querySelectorAll(
+            "a, button, .magnetic-btn, .destination-card, .culture-card, .cuisine-card, .gallery-item"
+          )
+          .forEach((el) => {
+            el.addEventListener("mouseenter", () => {
+              if (window.Tone && Tone.context.state !== "running") Tone.start();
+              hoverSound.triggerAttackRelease("C6", "16n");
+              cursorOutline.classList.add("hover");
+            });
+            el.addEventListener("mouseleave", () =>
+              cursorOutline.classList.remove("hover")
+            );
+            el.addEventListener("click", () => {
+              if (window.Tone && Tone.context.state !== "running") Tone.start();
+              clickSound.triggerAttackRelease("C4", "8n");
+            });
+          });
+
+        // --- SCROLL & ANIMATION ---
+        document
+          .getElementById("scroll-down-indicator")
+          .addEventListener("click", () => {
+            document
+              .getElementById("about")
+              .scrollIntoView({ behavior: "smooth" });
+          });
+        window.addEventListener("scroll", () => {
+          document
+            .getElementById("main-header")
+            .classList.toggle("header-scrolled", window.scrollY > 50);
+        });
+
+        // --- MENU DI ĐỘNG ---
+        const mobileMenu = document.getElementById("mobile-menu");
+        document
+          .getElementById("mobile-menu-button")
+          .addEventListener("click", () =>
+            mobileMenu.classList.toggle("hidden")
+          );
+        document.querySelectorAll(".nav-link-mobile").forEach((link) => {
+          link.addEventListener("click", () =>
+            mobileMenu.classList.add("hidden")
+          );
+        });
+
+        // --- ANIMATION KHI CUỘN ---
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting)
+                entry.target.classList.add("is-visible");
+            });
+          },
+          { threshold: 0.1 }
+        );
+        document
+          .querySelectorAll(".fade-in-section")
+          .forEach((section) => observer.observe(section));
+
+        // --- HIỂN THỊ & LỌC ĐIỂM ĐẾN ---
+        const destinationsGrid = document.getElementById("destinations-grid");
+        const filterButtonsContainer =
+          document.getElementById("filter-buttons");
+
+        const renderFilterButtons = () => {
+          const filters = languageContent[currentLanguage].destinations.filter;
+          filterButtonsContainer.innerHTML = Object.entries(filters)
+            .map(
+              ([key, value]) => `
+                <button class="filter-btn ${
+                  key === "all" ? "active" : ""
+                }" data-filter="${key}">${value}</button>
+            `
+            )
+            .join("");
+
+          document.querySelectorAll(".filter-btn").forEach((button) => {
+            button.addEventListener("click", () => {
+              document
+                .querySelectorAll(".filter-btn")
+                .forEach((btn) => btn.classList.remove("active"));
+              button.classList.add("active");
+              renderDestinations(button.dataset.filter);
+            });
+          });
+        };
+
+        const renderDestinations = (filter = "all") => {
+          destinationsGrid.innerHTML = "";
+          const currentDestinations = data[currentLanguage].destinations;
+          currentDestinations
+            .filter((d) => filter === "all" || d.category === filter)
+            .forEach((dest) => {
+              const card = document.createElement("div");
+              card.className =
+                "destination-card bg-[var(--bg-medium)] rounded-lg shadow-lg hover:shadow-green-900/20 transition-all duration-300 transform hover:-translate-y-2 cursor-pointer";
+              card.dataset.id = dest.id;
+              card.innerHTML = `<div class="destination-card-img-wrapper rounded-t-lg"><img src="${dest.image}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1A2B22/EAE7D5?text=VNDPay';" alt="${dest.title}" class="w-full h-56 object-cover rounded-t-lg"></div><div class="p-6"><h3 class="text-xl font-bold text-white">${dest.title}</h3><p class="text-[var(--text-dark)] mt-2">${dest.shortDesc}</p></div>`;
+              card.addEventListener("click", () => openModal(dest.id));
+              destinationsGrid.appendChild(card);
+            });
+        };
+
+        // --- LOGIC MODAL ---
+        const modal = document.getElementById("destination-modal");
+        const openModal = (id) => {
+          const dest = data[currentLanguage].destinations.find(
+            (d) => d.id === id
+          );
+          if (!dest) return;
+          const modalContent = document.getElementById("modal-content");
+          modalContent.innerHTML = `
+            <div class="w-full md:w-1/2 flex-shrink-0"><img src="${
+              dest.image
+            }" onerror="this.onerror=null;this.src='https://placehold.co/600x600/1A2B22/EAE7D5?text=VNDPay';" alt="${
+            dest.title
+          }" class="w-full h-full object-cover md:rounded-l-lg rounded-t-lg md:rounded-t-none"></div>
+            <div class="w-full md:w-1/2 p-6 flex flex-col overflow-y-auto">
+                 <button id="modal-close-inner" class="absolute top-3 right-4 text-gray-400 hover:text-white z-10 text-3xl">&times;</button>
+                <h2 class="text-3xl font-bold mb-4">${dest.title}</h2>
+                <div id="modal-tabs" class="flex border-b border-[var(--brand-secondary)] mb-4">
+                    <button class="modal-tab active" data-tab="overview">${
+                      languageContent[currentLanguage].modal.tabs.overview
+                    }</button>
+                    <button class="modal-tab" data-tab="history">${
+                      languageContent[currentLanguage].modal.tabs.history
+                    }</button>
+                    <button class="modal-tab" data-tab="tips">${
+                      languageContent[currentLanguage].modal.tabs.tips
+                    }</button>
+                </div>
+                <div id="modal-tab-content" class="flex-grow">
+                    <div class="tab-pane active" data-pane="overview"><p class="text-[var(--text-dark)] leading-relaxed">${
+                      dest.fullDesc
+                    }</p></div>
+                    <div class="tab-pane hidden" data-pane="history"><p class="text-[var(--text-dark)] leading-relaxed">${
+                      dest.history ||
+                      languageContent[currentLanguage].modal.no_history
+                    }</p></div>
+                    <div class="tab-pane hidden" data-pane="tips"><p class="text-[var(--text-dark)] leading-relaxed">${
+                      dest.tips ||
+                      languageContent[currentLanguage].modal.no_tips
+                    }</p></div>
+                </div>
+            </div>`;
+          modal.classList.remove("hidden");
+          setTimeout(
+            () => modalContent.classList.remove("scale-95", "opacity-0"),
+            10
+          );
+          document
+            .getElementById("modal-close-inner")
+            .addEventListener("click", closeModal);
+          document
+            .getElementById("modal-close-outer")
+            .addEventListener("click", closeModal);
+          document.querySelectorAll(".modal-tab").forEach((tab) =>
+            tab.addEventListener("click", (e) => {
+              const targetTab = e.target.dataset.tab;
+              document
+                .querySelectorAll(".modal-tab")
+                .forEach((t) => t.classList.remove("active"));
+              e.target.classList.add("active");
+              document
+                .querySelectorAll(".tab-pane")
+                .forEach((p) => p.classList.add("hidden"));
+              document
+                .querySelector(`.tab-pane[data-pane="${targetTab}"]`)
+                .classList.remove("hidden");
+            })
+          );
+        };
+        const closeModal = () => {
+          document
+            .getElementById("modal-content")
+            .classList.add("scale-95", "opacity-0");
+          setTimeout(() => modal.classList.add("hidden"), 300);
+        };
+
+        // --- HIỂN THỊ VĂN HÓA ---
+        const renderCulture = () => {
+          const festivalsGrid = document.getElementById("festivals-grid");
+          const heritageNonNuoc = document.getElementById("heritage-non-nuoc");
+          const heritageCham = document.getElementById("heritage-cham");
+
+          const cultureData = data[currentLanguage].culture;
+
+          // Render Festivals
+          festivalsGrid.innerHTML = "";
+          cultureData.festivals.forEach((festival) => {
+            const card = document.createElement("div");
+            card.className =
+              "culture-card bg-[var(--bg-medium)] rounded-lg shadow-lg hover:shadow-green-900/20 transition-all duration-300 transform hover:-translate-y-2 text-center flex flex-col";
+            card.innerHTML = `
+              <div class="culture-card-img-wrapper rounded-t-lg flex-shrink-0 h-48">
+                <img src="${festival.image}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1A2B22/EAE7D5?text=Lễ+Hội';" alt="${festival.title}" class="w-full h-full object-cover rounded-t-lg">
+              </div>
+              <div class="p-5 flex flex-col flex-grow">
+                <h4 class="text-xl font-bold text-white">${festival.title}</h4>
+                <p class="text-[var(--text-dark)] mt-2 text-sm flex-grow">${festival.desc}</p>
+              </div>
+            `;
+            festivalsGrid.appendChild(card);
+          });
+
+          // Render Heritage Sites
+          const nonNuocData = cultureData.heritage.nonNuoc;
+          heritageNonNuoc.innerHTML = `
+            <div class="bg-[var(--bg-medium)] rounded-lg shadow-lg overflow-hidden h-full flex flex-col">
+                <img src="${nonNuocData.image}" onerror="this.onerror=null;this.src='https://placehold.co/800x600/1A2B22/EAE7D5?text=Di+Sản';" alt="${nonNuocData.title}" class="w-full h-64 object-cover">
+                <div class="p-6 flex-grow">
+                    <h4 class="text-2xl font-bold text-white mb-2">${nonNuocData.title}</h4>
+                    <p class="text-[var(--text-dark)]">${nonNuocData.desc}</p>
+                </div>
+            </div>
+          `;
+
+          const chamData = cultureData.heritage.chamMuseum;
+          heritageCham.innerHTML = `
+             <div class="bg-[var(--bg-medium)] rounded-lg shadow-lg overflow-hidden h-full flex flex-col">
+                <img src="${chamData.image}" onerror="this.onerror=null;this.src='https://placehold.co/800x600/1A2B22/EAE7D5?text=Di+Sản';" alt="${chamData.title}" class="w-full h-64 object-cover">
+                <div class="p-6 flex-grow">
+                    <h4 class="text-2xl font-bold text-white mb-2">${chamData.title}</h4>
+                    <p class="text-[var(--text-dark)]">${chamData.desc}</p>
+                </div>
+            </div>
+          `;
+        };
+
+        // --- SCROLLYTELLING ---
+        const renderHistory = () => {
+          const scrollyVis = document.getElementById("scrolly-vis-content");
+          const scrollyArticle = document.getElementById("scrolly-article");
+          scrollyVis.innerHTML = "";
+          scrollyArticle.innerHTML = "";
+          data[currentLanguage].history.forEach((stepData) => {
+            const img = document.createElement("img");
+            img.src = historyImages[stepData.imageId];
+            img.id = stepData.id;
+            img.className = "scrolly-img";
+            img.onerror =
+              "this.onerror=null;this.src='https://placehold.co/500x700/121E17/EAE7D5?text=Lịch+Sử';";
+            scrollyVis.appendChild(img);
+
+            const stepEl = document.createElement("div");
+            stepEl.className = "step";
+            stepEl.dataset.img = stepData.id;
+            stepEl.innerHTML = `<p><strong>${stepData.title}</strong><br>${stepData.text}</p>`;
+            scrollyArticle.appendChild(stepEl);
+          });
+          gsap.registerPlugin(ScrollTrigger);
+          ScrollTrigger.getAll().forEach((t) => t.kill());
+          gsap.utils.toArray(".step").forEach((step) => {
+            ScrollTrigger.create({
+              trigger: step,
+              start: "top center",
+              end: "bottom center",
+              onEnter: () => {
+                document
+                  .querySelectorAll(".scrolly-img")
+                  .forEach((img) => img.classList.remove("active"));
+                document
+                  .getElementById(step.dataset.img)
+                  .classList.add("active");
+              },
+              onEnterBack: () => {
+                document
+                  .querySelectorAll(".scrolly-img")
+                  .forEach((img) => img.classList.remove("active"));
+                document
+                  .getElementById(step.dataset.img)
+                  .classList.add("active");
+              },
+            });
+          });
+          if (document.querySelector(".scrolly-img")) {
+            document.querySelector(".scrolly-img").classList.add("active");
+          }
+        };
+
+        // --- HIỂN THỊ ẨM THỰC ---
+        const cuisineMenu = document.getElementById("cuisine-menu");
+        const cuisineDetailsContainer = document.getElementById(
+          "cuisine-details-container"
+        );
+
+        const renderCuisine = () => {
+          cuisineMenu.innerHTML = "";
+          const cuisineData = data[currentLanguage].cuisine;
+
+          cuisineData.forEach((item, index) => {
+            const menuItem = document.createElement("li");
+            menuItem.className =
+              "cuisine-menu-item p-4 cursor-pointer text-lg font-semibold";
+            menuItem.textContent = item.title;
+            menuItem.dataset.index = index;
+            if (index === 0) {
+              menuItem.classList.add("active");
             }
-          };
+            cuisineMenu.appendChild(menuItem);
+          });
 
-            // --- FUNCTIONALITY ---
-            const destinationsGrid = document.getElementById("destinations-grid");
-            const modal = document.getElementById("destination-modal");
-            const modalContent = document.getElementById("modal-content");
+          displayCuisineDetails(0); // Display the first item by default
 
-            const renderDestinations = (filter = "all") => {
-                if(!destinationsGrid) return;
-                destinationsGrid.innerHTML = "";
-                const currentDestinations = data[currentLanguage].destinations || [];
-                
-                currentDestinations
-                    .filter((d) => filter === "all" || d.category === filter)
-                    .forEach((dest) => {
-                        const card = document.createElement("div");
-                        card.className = "destination-card bg-[#1e293b] rounded-lg shadow-lg hover:shadow-green-900/20 transition-all duration-300 transform hover:-translate-y-2 cursor-pointer";
-                        card.dataset.id = dest.id;
-                        card.innerHTML = `<div class="destination-card-img-wrapper rounded-t-lg overflow-hidden"><img src="${dest.image}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1A2B22/EAE7D5?text=VNDPay';" alt="${dest.title}" class="w-full h-56 object-cover rounded-t-lg transition-transform hover:scale-105"></div><div class="p-6"><h3 class="text-xl font-bold text-white">${dest.title}</h3><p class="text-gray-400 mt-2">${dest.shortDesc}</p></div>`;
-                        card.addEventListener("click", () => openModal(dest.id));
-                        destinationsGrid.appendChild(card);
-                    });
-            };
+          cuisineMenu.addEventListener("click", (e) => {
+            if (e.target.tagName === "LI") {
+              const index = e.target.dataset.index;
+              document
+                .querySelectorAll(".cuisine-menu-item")
+                .forEach((item) => item.classList.remove("active"));
+              e.target.classList.add("active");
+              displayCuisineDetails(index);
+            }
+          });
+        };
 
-            const openModal = (id) => {
-                const dest = data[currentLanguage].destinations.find((d) => d.id === id);
-                if (!dest) return;
-                
-                modalContent.innerHTML = `
-                    <div class="w-full md:w-1/2 flex-shrink-0 h-64 md:h-auto">
-                        <img src="${dest.image}" onerror="this.onerror=null;this.src='https://placehold.co/600x600/1A2B22/EAE7D5?text=VNDPay';" alt="${dest.title}" class="w-full h-full object-cover md:rounded-l-lg rounded-t-lg md:rounded-t-none">
-                    </div>
-                    <div class="w-full md:w-1/2 p-6 flex flex-col overflow-y-auto relative bg-[#1e293b]">
-                         <button id="modal-close-inner" class="absolute top-3 right-4 text-gray-400 hover:text-white z-10 text-3xl">&times;</button>
-                        <h2 class="text-3xl font-bold mb-4 text-white">${dest.title}</h2>
-                        <div id="modal-tabs" class="flex border-b border-gray-600 mb-4">
-                            <button class="modal-tab active px-4 py-2 text-white border-b-2 border-white" data-tab="overview">${languageContent[currentLanguage].modal.tabs.overview}</button>
-                            <button class="modal-tab px-4 py-2 text-gray-400 hover:text-white" data-tab="history">${languageContent[currentLanguage].modal.tabs.history}</button>
-                            <button class="modal-tab px-4 py-2 text-gray-400 hover:text-white" data-tab="tips">${languageContent[currentLanguage].modal.tabs.tips}</button>
-                        </div>
-                        <div id="modal-tab-content" class="flex-grow text-gray-300">
-                            <div class="tab-pane active" data-pane="overview"><p class="leading-relaxed">${dest.fullDesc}</p></div>
-                            <div class="tab-pane hidden" data-pane="history"><p class="leading-relaxed">${dest.history || languageContent[currentLanguage].modal.no_history}</p></div>
-                            <div class="tab-pane hidden" data-pane="tips"><p class="leading-relaxed">${dest.tips || languageContent[currentLanguage].modal.no_tips}</p></div>
-                        </div>
-                    </div>
-                `;
-                
-                modal.classList.remove('hidden');
+        const displayCuisineDetails = (index) => {
+          const item = data[currentLanguage].cuisine[index];
+          const lang = languageContent[currentLanguage];
 
-                // Logic close modal
-                document.getElementById('modal-close-inner').addEventListener('click', () => {
-                    modal.classList.add('hidden');
-                });
+          cuisineDetailsContainer.innerHTML = `
+              <div class="w-full h-64 rounded-lg overflow-hidden mb-6">
+                  <img src="${
+                    item.image
+                  }" onerror="this.onerror=null;this.src='https://placehold.co/800x600/1A2B22/EAE7D5?text=Món+Ăn';" alt="${
+            item.title
+          }" class="w-full h-full object-cover">
+              </div>
+              <div>
+                  <h4 class="text-2xl font-bold text-white mb-2">${
+                    item.title
+                  }</h4>
+                  <p class="text-[var(--text-dark)] mb-4">${item.desc}</p>
+                  <div class="border-t border-[var(--brand-secondary)] pt-4">
+                      <h5 class="font-semibold text-white mb-2">${
+                        lang.cuisine.flavorTitle
+                      }:</h5>
+                      <p class="text-[var(--text-dark)] italic mb-4">${
+                        item.flavor
+                      }</p>
+                      <h5 class="font-semibold text-white mb-2">${
+                        lang.cuisine.locationTitle
+                      }:</h5>
+                      <ul class="list-disc list-inside text-[var(--text-dark)] space-y-1">
+                          ${item.locations
+                            .map((loc) => `<li>${loc}</li>`)
+                            .join("")}
+                      </ul>
+                  </div>
+              </div>
+            `;
+          gsap.fromTo(
+            cuisineDetailsContainer,
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.5 }
+          );
+        };
 
-                // Logic Tabs
-                const tabs = modalContent.querySelectorAll('.modal-tab');
-                const panes = modalContent.querySelectorAll('.tab-pane');
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        tabs.forEach(t => {
-                            t.classList.remove('active', 'border-white', 'text-white');
-                            t.classList.add('text-gray-400');
-                        });
-                        tab.classList.add('active', 'border-white', 'text-white');
-                        tab.classList.remove('text-gray-400');
+        // --- KẾ HOẠCH CHUYẾN ĐI (PHIÊN BẢN SỬA LỖI HOÀN CHỈNH) ---
 
-                        const target = tab.dataset.tab;
-                        panes.forEach(pane => {
-                            pane.classList.add('hidden');
-                            if(pane.dataset.pane === target) {
-                                pane.classList.remove('hidden');
-                            }
-                        });
-                    });
-                });
-            };
+        const plannerResult = document.getElementById("planner-result");
+        const daysOptionsContainer = document.getElementById(
+          "planner-days-options"
+        );
+        const styleOptionsContainer = document.getElementById(
+          "planner-style-options"
+        );
 
-            // Init
-            renderDestinations();
-            
-            // Filter click events
-            document.querySelectorAll(".filter-btn").forEach((button) => {
-              button.addEventListener("click", () => {
-                document.querySelectorAll(".filter-btn").forEach((btn) => {
-                    btn.classList.remove("active", "text-white", "border-white");
-                    btn.classList.add("text-gray-400", "border-gray-600");
-                });
-                button.classList.add("active", "text-white", "border-white");
-                button.classList.remove("text-gray-400", "border-gray-600");
-                renderDestinations(button.dataset.filter);
+        /**
+         * Hàm khởi tạo và hiển thị các nút lựa chọn cho việc lập kế hoạch.
+         */
+        const renderPlannerOptions = () => {
+          const days = [2, 3, 4, 5];
+          const uiText = languageContent[currentLanguage].planner;
+
+          daysOptionsContainer.innerHTML = days
+            .map(
+              (day) => `
+        <button class="planner-option-btn day-btn px-5 py-2 rounded-lg font-medium ${
+          day === 3 ? "active" : ""
+        }" data-day="${day}">
+            ${day} ${uiText.day_unit || "ngày"}
+        </button>
+    `
+            )
+            .join("");
+
+          const styles = uiText.styles;
+          styleOptionsContainer.innerHTML = Object.keys(styles)
+            .map(
+              (key) => `
+        <button class="planner-option-btn style-btn px-5 py-2 rounded-lg font-medium" data-style="${key}">
+            ${styles[key]}
+        </button>
+    `
+            )
+            .join("");
+
+          attachPlannerEventListeners();
+          generateAndRenderItinerary(); // Gọi lần đầu để hiển thị thông báo mặc định
+        };
+
+        /**
+         * Hàm gắn các sự kiện click cho các nút lựa chọn.
+         */
+        const attachPlannerEventListeners = () => {
+          // Sự kiện cho nút chọn ngày
+          daysOptionsContainer.querySelectorAll(".day-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              daysOptionsContainer
+                .querySelectorAll(".day-btn")
+                .forEach((b) => b.classList.remove("active"));
+              btn.classList.add("active");
+              generateAndRenderItinerary();
+            });
+          });
+
+          // Sự kiện cho nút chọn phong cách (ĐÃ SỬA LỖI: CHỈ CHỌN 1)
+          styleOptionsContainer
+            .querySelectorAll(".style-btn")
+            .forEach((btn) => {
+              btn.addEventListener("click", () => {
+                const isActive = btn.classList.contains("active");
+
+                // Luôn xóa 'active' khỏi tất cả các nút trước
+                styleOptionsContainer
+                  .querySelectorAll(".style-btn")
+                  .forEach((b) => b.classList.remove("active"));
+
+                // Nếu nút vừa nhấn chưa active, thì bật nó lên
+                if (!isActive) {
+                  btn.classList.add("active");
+                }
+                // Nếu nhấn lại nút đang active, nó sẽ bị tắt (cho phép bỏ chọn)
+
+                generateAndRenderItinerary();
               });
             });
+        };
 
-            // Language Switcher Logic (Simple version)
-            document.querySelectorAll('.lang-switcher button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    currentLanguage = btn.dataset.lang;
-                    document.querySelectorAll('.lang-switcher button').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    
-                    // Update content
-                    document.querySelectorAll('[data-lang-key]').forEach(el => {
-                        const key = el.dataset.langKey;
-                        const keys = key.split('.');
-                        let content = languageContent[currentLanguage];
-                        keys.forEach(k => content = content[k]);
-                        if(content) el.innerText = content;
-                    });
-                    
-                    renderDestinations(document.querySelector('.filter-btn.active')?.dataset.filter || 'all');
-                });
-            });
+        /**
+         * Hàm điều phối: Lấy lựa chọn của người dùng, gọi hàm tạo lịch trình và hiển thị kết quả.
+         */
+        const generateAndRenderItinerary = () => {
+          const selectedDaysEl = document.querySelector(".day-btn.active");
+          if (!selectedDaysEl) return;
+
+          const selectedDays = parseInt(selectedDaysEl.dataset.day);
+          const selectedStyles = Array.from(
+            document.querySelectorAll(".style-btn.active")
+          ).map((btn) => btn.dataset.style);
+
+          // Nếu không có phong cách nào được chọn, hiển thị thông báo
+          if (selectedStyles.length === 0) {
+            plannerResult.innerHTML = `<p class="text-center text-[var(--text-dark)]">${languageContent[currentLanguage].planner.noResult}</p>`;
+            return;
+          }
+
+          const itinerary = generateDetailedItineraryV4(
+            selectedDays,
+            selectedStyles
+          );
+          renderItinerary(itinerary);
+        };
+
+        /**
+         * Hàm hiển thị lịch trình lên giao diện (ĐÃ SỬA LỖI & BỎ ICON).
+         * @param {Array<Array<Object>>} plan - Mảng các ngày, mỗi ngày là một mảng các hoạt động.
+         */
+        const renderItinerary = (plan) => {
+          if (!plan || plan.length === 0) {
+            plannerResult.innerHTML = `<p class="text-center text-[var(--text-dark)]">${languageContent[currentLanguage].planner.noResult}</p>`;
+            return;
+          }
+          const uiText = languageContent[currentLanguage].planner;
+
+          plannerResult.innerHTML = `
+    <h3 class="text-2xl font-bold text-white mb-6 text-center">${
+      uiText.resultTitle
+    }</h3>
+    <div class="space-y-6">
+      ${plan
+        .map(
+          (dayPlan, index) => `
+        <div class="bg-black/20 border border-[var(--brand-secondary)] p-6 rounded-lg">
+            <h4 class="text-xl font-bold text-[var(--brand-primary)] mb-4">${
+              uiText.day
+            } ${index + 1}</h4>
+            <div class="space-y-5">
+              ${dayPlan
+                .map((activity) => {
+                  // SỬA LỖI: Lặp trực tiếp qua mảng dayPlan
+                  const time =
+                    currentLanguage === "vi"
+                      ? activity.time_vi
+                      : activity.time_en;
+                  const title =
+                    currentLanguage === "vi"
+                      ? activity.activity_vi
+                      : activity.activity_en;
+                  const desc =
+                    currentLanguage === "vi"
+                      ? activity.description_vi
+                      : activity.description_en;
+                  const tip =
+                    currentLanguage === "vi"
+                      ? activity.tip_vi
+                      : activity.tip_en;
+
+                  // HTML đã được loại bỏ icon
+                  return `
+                <div>
+                    <div>
+                        <p class="font-bold text-white">${time}</p>
+                        <p class="font-semibold text-white/90 mt-1">${title}</p>
+                        ${
+                          desc
+                            ? `<p class="text-sm text-[var(--text-dark)] mt-1">${desc}</p>`
+                            : ""
+                        }
+                        ${
+                          tip
+                            ? `<div class="mt-2 text-xs text-[var(--brand-primary)] bg-[var(--brand-secondary)]/50 inline-block px-2 py-1 rounded">${tip}</div>`
+                            : ""
+                        }
+                    </div>
+                </div>`;
+                })
+                .join("")}
+            </div>
+        </div>`
+        )
+        .join("")}
+    </div>`;
+
+          gsap.fromTo(
+            plannerResult,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.5 }
+          );
+
+          // Vẫn gọi để đảm bảo các icon khác trên trang (nếu có) được vẽ
+          lucide.createIcons();
+        };
+
+        // CƠ SỞ DỮ LIỆU HOẠT ĐỘNG (KHÔNG THAY ĐỔI)
+        const DETAILED_ACTIVITIES_V4 = {
+          bana: {
+            id: "bana",
+            type: "attraction",
+            tags: ["discovery", "family"],
+            duration: 8,
+            time_slot: "full_day",
+            time_vi: "Cả ngày (8:00 - 17:00)",
+            activity_vi: "Khám phá Sun World Bà Nà Hills & Cầu Vàng",
+            description_vi:
+              "Tham quan Cầu Vàng, Làng Pháp, vườn hoa và khu vui chơi Fantasy Park.",
+            tip_vi: "Nên mua vé online và đi sớm để tránh đông đúc.",
+            time_en: "Full Day (8:00 AM - 5:00 PM)",
+            activity_en: "Explore Sun World Ba Na Hills & Golden Bridge",
+            description_en:
+              "Visit the Golden Bridge, French Village, flower gardens, and Fantasy Park.",
+            tip_en: "Buy tickets online and go early to avoid crowds.",
+          },
+          hoian: {
+            id: "hoian",
+            type: "attraction",
+            tags: ["culture", "relax"],
+            duration: 6,
+            time_slot: "afternoon_evening",
+            time_vi: "Chiều - Tối (15:00 - 21:00)",
+            activity_vi: "Dạo chơi Phố cổ Hội An",
+            description_vi:
+              "Khám phá Chùa Cầu, các hội quán. Ăn tối và đi thuyền thả hoa đăng trên sông Hoài.",
+            tip_vi: "Đặc sản phải thử: Cao Lầu, Cơm gà.",
+            time_en: "Afternoon - Evening (3:00 PM - 9:00 PM)",
+            activity_en: "Explore Hoi An Ancient Town",
+            description_en:
+              "Visit the Japanese Bridge, assembly halls. Have dinner and release lanterns on a boat trip.",
+            tip_en: "Must-try dishes: Cao Lau, Chicken Rice.",
+          },
+          nuiThanTai: {
+            id: "nuiThanTai",
+            type: "attraction",
+            tags: ["relax", "family"],
+            duration: 7,
+            time_slot: "full_day",
+            time_vi: "Cả ngày (9:00 - 17:00)",
+            activity_vi: "Thư giãn tại suối khoáng nóng Núi Thần Tài",
+            description_vi:
+              "Tận hưởng tắm khoáng nóng, tắm bùn, Onsen kiểu Nhật và vui chơi tại công viên nước.",
+            tip_vi: "Trải nghiệm luộc trứng trong dòng suối khoáng rất thú vị.",
+            time_en: "Full Day (9:00 AM - 5:00 PM)",
+            activity_en: "Relax at Than Tai Hot Springs Park",
+            description_en:
+              "Enjoy hot mineral baths, mud baths, Japanese-style Onsen, and the water park.",
+            tip_en:
+              "Boiling eggs in the natural hot stream is a fun experience.",
+          },
+          nguHanhSon: {
+            id: "nguHanhSon",
+            type: "attraction",
+            tags: ["discovery", "culture"],
+            duration: 3,
+            time_slot: "morning",
+            time_vi: "Sáng (8:00 - 11:00)",
+            activity_vi: "Tham quan Ngũ Hành Sơn & Làng đá Non Nước",
+            description_vi:
+              "Khám phá các hang động huyền bí và chùa cổ trên ngọn Thủy Sơn.",
+            tip_vi:
+              "Mang giày thể thao thoải mái. Có thang máy để tiết kiệm sức.",
+            time_en: "Morning (8:00 AM - 11:00 AM)",
+            activity_en: "Visit Marble Mountains & Non Nuoc Stone Village",
+            description_en:
+              "Explore mysterious caves and ancient pagodas on Water Mountain.",
+            tip_en:
+              "Wear comfortable sneakers. The elevator can save you energy.",
+          },
+          sonTra: {
+            id: "sonTra",
+            type: "attraction",
+            tags: ["discovery", "nature"],
+            duration: 3.5,
+            time_slot: "morning",
+            time_vi: "Sáng (7:30 - 11:00)",
+            activity_vi: "Khám phá Bán đảo Sơn Trà",
+            description_vi:
+              "Lên chùa Linh Ứng, ghé Đỉnh Bàn Cờ và Cây Đa Ngàn Năm.",
+            tip_vi:
+              "Nên đi xe số hoặc xe tay ga mạnh. Lái xe cẩn thận vì đường dốc.",
+            time_en: "Morning (7:30 AM - 11:00 AM)",
+            activity_en: "Explore Son Tra Peninsula",
+            description_en:
+              "Visit Linh Ung Pagoda, Ban Co Peak, and the Thousand-Year-Old Banyan Tree.",
+            tip_en: "A scooter is recommended. Drive carefully on steep roads.",
+          },
+          myKheBeach: {
+            id: "myKheBeach",
+            type: "attraction",
+            tags: ["relax", "family"],
+            duration: 2.5,
+            time_slot: "afternoon",
+            time_vi: "Chiều (16:00 - 18:30)",
+            activity_vi: "Tắm biển và thư giãn tại Mỹ Khê",
+            description_vi:
+              "Tận hưởng bãi biển cát trắng hoặc tham gia các hoạt động thể thao.",
+            tip_vi: "Buổi chiều là thời điểm đẹp nhất, ít nắng gắt.",
+            time_en: "Afternoon (4:00 PM - 6:30 PM)",
+            activity_en: "Swim and relax at My Khe Beach",
+            description_en:
+              "Enjoy the white sandy beach or participate in water sports.",
+            tip_en: "Late afternoon is the best time, with less harsh sun.",
+          },
+          chamMuseum: {
+            id: "chamMuseum",
+            type: "attraction",
+            tags: ["culture", "history"],
+            duration: 2,
+            time_slot: "morning",
+            time_vi: "Sáng (9:00 - 11:00)",
+            activity_vi: "Tham quan Bảo tàng Điêu khắc Chăm",
+            description_vi:
+              "Khám phá kho báu nghệ thuật của Vương quốc Champa xưa.",
+            tip_vi: "Nên thuê hướng dẫn viên để hiểu sâu hơn về lịch sử.",
+            time_en: "Morning (9:00 AM - 11:00 AM)",
+            activity_en: "Visit the Cham Sculpture Museum",
+            description_en:
+              "Discover the artistic treasures of the ancient Champa Kingdom.",
+            tip_en: "Consider hiring a guide to better understand the history.",
+          },
+          hanRiverCruise: {
+            id: "hanRiverCruise",
+            type: "experience",
+            tags: ["relax", "family"],
+            duration: 1.5,
+            time_slot: "evening",
+            time_vi: "Tối (20:00 - 21:30)",
+            activity_vi: "Du thuyền và ngắm Cầu Rồng phun lửa",
+            description_vi:
+              "Ngắm các cây cầu biểu tượng về đêm và xem trình diễn phun lửa/nước (cuối tuần).",
+            tip_vi: "Đặt vé trước, đặc biệt là vào cuối tuần.",
+            time_en: "Evening (8:00 PM - 9:30 PM)",
+            activity_en: "Cruise on Han River & watch Dragon Bridge show",
+            description_en:
+              "View the iconic bridges at night and watch the fire/water show (weekends).",
+            tip_en: "Book tickets in advance, especially on weekends.",
+          },
+          asiaPark: {
+            id: "asiaPark",
+            type: "attraction",
+            tags: ["family", "discovery"],
+            duration: 3,
+            time_slot: "evening",
+            time_vi: "Tối (18:00 - 21:00)",
+            activity_vi: "Vui chơi tại Công viên Châu Á & Sun Wheel",
+            description_vi:
+              "Trải nghiệm vòng quay Sun Wheel và các trò chơi cảm giác mạnh.",
+            tip_vi: "Kiểm tra lịch hoạt động trước khi đi.",
+            time_en: "Evening (6:00 PM - 9:00 PM)",
+            activity_en: "Have fun at Asia Park & Sun Wheel",
+            description_en: "Experience the Sun Wheel and thrilling games.",
+            tip_en: "Check the operating schedule before you go.",
+          },
+          lunch: {
+            id: "lunch",
+            type: "food",
+            tags: ["foodie", "culture", "relax", "family", "discovery"],
+            time_slot: "afternoon",
+            time_vi: "Bữa trưa",
+            activity_vi: "Thưởng thức ẩm thực địa phương",
+            description_vi:
+              "Gợi ý: Mì Quảng, Bún chả cá, hoặc Bánh tráng cuốn thịt heo.",
+            tip_vi:
+              "Mì Quảng Bà Mua (19 Trần Bình Trọng) là một lựa chọn tuyệt vời.",
+            time_en: "Lunch",
+            activity_en: "Enjoy local cuisine",
+            description_en:
+              "Suggestion: Mi Quang, Fish Cake Noodle Soup, or Pork Rolls.",
+            tip_en: "Mi Quang Ba Mua (19 Tran Binh Trong) is a great choice.",
+          },
+          dinner: {
+            id: "dinner",
+            type: "food",
+            tags: ["foodie", "culture", "relax", "family", "discovery"],
+            time_slot: "evening",
+            time_vi: "Bữa tối",
+            activity_vi: "Khám phá ẩm thực Đà Thành",
+            description_vi:
+              "Gợi ý: Thưởng thức hải sản tươi sống hoặc các món ăn vặt như Bánh xèo, Nem lụi.",
+            tip_vi: "Hải sản Bé Mặn (Võ Nguyên Giáp) rất nổi tiếng.",
+            time_en: "Dinner",
+            activity_en: "Discover Da Nang cuisine",
+            description_en:
+              "Suggestion: Enjoy fresh seafood or street food like Banh Xeo, Nem Lui.",
+            tip_en: "Be Man Seafood (Vo Nguyen Giap) is very famous.",
+          },
+          coffee: {
+            id: "coffee",
+            type: "experience",
+            tags: ["relax"],
+            time_slot: "afternoon",
+            time_vi: "Chiều",
+            activity_vi: "Thư giãn ở quán cà phê",
+            description_vi:
+              "Nghỉ ngơi và tận hưởng cà phê muối hoặc cà phê dừa đặc sản.",
+            tip_vi:
+              "43 Factory Coffee Roaster có không gian và chất lượng rất tốt.",
+            time_en: "Afternoon",
+            activity_en: "Relax at a coffee shop",
+            description_en:
+              "Take a break and enjoy specialty salt coffee or coconut coffee.",
+            tip_en:
+              "43 Factory Coffee Roaster has a great ambiance and quality.",
+          },
+        };
+
+        /**
+         * Thuật toán tạo lịch trình chi tiết và chuyên biệt hóa (ĐÃ SỬA LỖI & TỐI ƯU).
+         * @param {number} days - Số ngày đi.
+         * @param {Array<string>} styles - Mảng chứa một phong cách du lịch.
+         * @returns {Array<Array<Object>>} - Lịch trình hoàn chỉnh.
+         */
+        const generateDetailedItineraryV4 = (days, styles) => {
+          if (styles.length === 0) return [];
+          const selectedStyle = styles[0];
+
+          const CORE_ACTIVITIES = {
+            discovery: ["bana", "sonTra", "nguHanhSon"],
+            relax: ["nuiThanTai", "myKheBeach", "hanRiverCruise"],
+            culture: ["hoian", "chamMuseum", "nguHanhSon"],
+          };
+
+          const FILLER_ACTIVITIES = {
+            discovery: ["asiaPark", "myKheBeach"],
+            relax: ["asiaPark", "coffee"],
+            culture: ["sonTra"],
+          };
+
+          let plan = [];
+          let usedMajorActivities = new Set();
+          const allActivities = DETAILED_ACTIVITIES_V4;
+          const shuffle = (array) => [...array].sort(() => 0.5 - Math.random());
+
+          let corePool = shuffle(CORE_ACTIVITIES[selectedStyle] || []);
+          let fillerPool = shuffle(FILLER_ACTIVITIES[selectedStyle] || []);
+
+          for (let i = 0; i < days; i++) {
+            let dayPlan = { morning: null, afternoon: null, evening: null };
+
+            let fullDayActivityId = corePool.find(
+              (id) =>
+                allActivities[id]?.time_slot === "full_day" &&
+                !usedMajorActivities.has(id)
+            );
+            if (fullDayActivityId) {
+              const activity = allActivities[fullDayActivityId];
+              dayPlan.morning = activity;
+              dayPlan.afternoon = {
+                ...activity,
+                id: `${activity.id}_cont`,
+                time_vi: "Chiều",
+                time_en: "Afternoon",
+                activity_vi: "Tiếp tục tham quan & ăn trưa",
+                activity_en: "Continue exploring & lunch",
+                description_vi: "",
+                tip_vi: "",
+              };
+              dayPlan.evening = allActivities.dinner;
+              usedMajorActivities.add(fullDayActivityId);
+              corePool = corePool.filter((id) => id !== fullDayActivityId);
+              plan.push(dayPlan);
+              continue;
+            }
+
+            let morningActivityId = corePool.shift() || fillerPool.shift();
+            if (
+              morningActivityId &&
+              !usedMajorActivities.has(morningActivityId)
+            ) {
+              dayPlan.morning = allActivities[morningActivityId];
+              usedMajorActivities.add(morningActivityId);
+            }
+
+            let afternoonActivityId = corePool.shift() || fillerPool.shift();
+            if (
+              afternoonActivityId &&
+              !usedMajorActivities.has(afternoonActivityId)
+            ) {
+              const activity = allActivities[afternoonActivityId];
+              if (activity.time_slot === "afternoon_evening") {
+                dayPlan.afternoon = activity;
+                dayPlan.evening = {
+                  ...activity,
+                  id: `${activity.id}_cont`,
+                  time_vi: "Tối",
+                  time_en: "Evening",
+                  activity_vi: "Ăn tối & Thả hoa đăng",
+                  activity_en: "Dinner & Lantern release",
+                  description_vi:
+                    "Thưởng thức đặc sản và không khí huyền ảo về đêm.",
+                  tip_vi: "Đi thuyền trên sông Hoài là trải nghiệm đáng nhớ.",
+                };
+                usedMajorActivities.add(afternoonActivityId);
+              } else if (!dayPlan.afternoon) {
+                dayPlan.afternoon = activity;
+                usedMajorActivities.add(afternoonActivityId);
+              }
+            }
+
+            // Lấp đầy các chỗ trống còn lại một cách thông minh
+            if (!dayPlan.morning) {
+              const fallbackMorning =
+                allActivities.chamMuseum.tags.includes(selectedStyle) &&
+                !usedMajorActivities.has("chamMuseum")
+                  ? allActivities.chamMuseum
+                  : allActivities.coffee;
+              if (!usedMajorActivities.has(fallbackMorning.id)) {
+                dayPlan.morning = fallbackMorning;
+                usedMajorActivities.add(fallbackMorning.id);
+              }
+            }
+            if (!dayPlan.afternoon) {
+              dayPlan.afternoon = allActivities.lunch;
+            }
+            if (!dayPlan.evening) {
+              const fallbackEvening =
+                selectedStyle === "relax" &&
+                !usedMajorActivities.has("hanRiverCruise")
+                  ? allActivities.hanRiverCruise
+                  : allActivities.dinner;
+              if (!usedMajorActivities.has(fallbackEvening.id)) {
+                dayPlan.evening = fallbackEvening;
+                usedMajorActivities.add(fallbackEvening.id);
+              } else {
+                dayPlan.evening = allActivities.dinner;
+              }
+            }
+
+            plan.push(dayPlan);
+          }
+
+          return plan.map((day) => Object.values(day).filter(Boolean));
+        };
+        // --- CONTACT MODAL LOGIC ---
+        const contactModal = document.getElementById("contact-modal");
+        const openContactBtn = document.getElementById(
+          "open-contact-modal-btn"
+        );
+        const closeContactBtn = document.getElementById("contact-modal-close");
+        const closeContactOuter = document.getElementById(
+          "contact-modal-close-outer"
+        );
+        const contactForm = document.getElementById("contact-form");
+        const contactFormContainer = document.getElementById(
+          "contact-form-container"
+        );
+        const successMessage = document.getElementById(
+          "contact-success-message"
+        );
+        const contactModalContent = document.getElementById(
+          "contact-modal-content"
+        );
+
+        const openContactModal = () => {
+          contactModal.classList.remove("hidden");
+          setTimeout(
+            () => contactModalContent.classList.remove("scale-95", "opacity-0"),
+            10
+          );
+        };
+        const closeContactModal = () => {
+          contactModalContent.classList.add("scale-95", "opacity-0");
+          setTimeout(() => {
+            contactModal.classList.add("hidden");
+            contactFormContainer.classList.remove("hidden");
+            successMessage.classList.add("hidden");
+          }, 300);
+        };
+
+        openContactBtn.addEventListener("click", openContactModal);
+        closeContactBtn.addEventListener("click", closeContactModal);
+        closeContactOuter.addEventListener("click", closeContactModal);
+
+        contactForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          contactFormContainer.classList.add("hidden");
+          successMessage.classList.remove("hidden");
+          lucide.createIcons(); // Re-render icons if needed
         });
+
+        // --- NEW CREATIVE FAREWELL SECTION LOGIC ---
+        const farewellCanvas = document.getElementById("farewell-canvas");
+        const ctx = farewellCanvas.getContext("2d");
+        let lanterns = [];
+        let animationFrameId;
+
+        function resizeCanvas() {
+          farewellCanvas.width = farewellCanvas.offsetWidth;
+          farewellCanvas.height = farewellCanvas.offsetHeight;
+        }
+
+        class Lantern {
+          constructor() {
+            this.x = Math.random() * farewellCanvas.width;
+            this.y = farewellCanvas.height + Math.random() * 100;
+            this.size = Math.random() * 5 + 5; // size between 5 and 10
+            this.speedY = Math.random() * 0.5 + 0.2; // vertical speed
+            this.color = `hsla(${Math.random() * 60}, 100%, 70%, 0.8)`;
+            this.sway = Math.random() * Math.PI * 2;
+            this.swaySpeed = Math.random() * 0.02 + 0.01;
+          }
+
+          update() {
+            this.y -= this.speedY;
+            this.sway += this.swaySpeed;
+            this.x += Math.sin(this.sway) * 0.3; // Gentle sway
+          }
+
+          draw() {
+            ctx.beginPath();
+            const gradient = ctx.createRadialGradient(
+              this.x,
+              this.y,
+              0,
+              this.x,
+              this.y,
+              this.size * 2
+            );
+            gradient.addColorStop(0, this.color.replace("0.8", "1"));
+            gradient.addColorStop(0.2, this.color);
+            gradient.addColorStop(1, this.color.replace("0.8", "0"));
+
+            ctx.fillStyle = gradient;
+            ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        function handleLanterns() {
+          if (Math.random() < 0.15) {
+            // Control the rate of new lanterns
+            lanterns.push(new Lantern());
+          }
+
+          for (let i = lanterns.length - 1; i >= 0; i--) {
+            lanterns[i].update();
+            lanterns[i].draw();
+
+            // Remove lanterns that have floated off-screen
+            if (lanterns[i].y < -lanterns[i].size * 2) {
+              lanterns.splice(i, 1);
+            }
+          }
+        }
+
+        function animate() {
+          ctx.clearRect(0, 0, farewellCanvas.width, farewellCanvas.height);
+          handleLanterns();
+          animationFrameId = requestAnimationFrame(animate);
+        }
+
+        function startAnimation() {
+          if (!animationFrameId) {
+            resizeCanvas();
+            animate();
+          }
+        }
+
+        function stopAnimation() {
+          if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+            ctx.clearRect(0, 0, farewellCanvas.width, farewellCanvas.height);
+            lanterns = []; // Clear lanterns when not visible
+          }
+        }
+
+        const farewellObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                startAnimation();
+              } else {
+                stopAnimation();
+              }
+            });
+          },
+          { threshold: 0.1 }
+        );
+
+        farewellObserver.observe(document.getElementById("farewell"));
+        window.addEventListener("resize", resizeCanvas);
+
+        // --- MUSIC PLAYER LOGIC V7 (COMPACT & STABLE) ---
+        const musicPlayerContainer = document.getElementById("music-player");
+        const playPauseBtn = document.getElementById("play-pause-btn");
+        const nextTrackBtn = document.getElementById("next-track-btn");
+        const volumeSlider = document.getElementById("volume-slider");
+        const playIcon = document.getElementById("play-icon");
+        const pauseIcon = document.getElementById("pause-icon");
+        // XÓA: Bỏ các biến không cần thiết như trackTitle, progressBar...
+
+        const playlist = [
+          { title: "Hello Viet Nam", path: "music/xin_chao_viet_nam.mp3" },
+          { title: "Một vòng Việt Nam", path: "music/mot_vong_viet_nam.mp3" },
+          { title: "Khát vọng tuổi trẻ", path: "music/khat_vong_tuoi_tre.mp3" },
+          {
+            title: "Bay cùng tôi lên bầu trời Việt Nam",
+            path: "music/bay_cung_toi_len_bau_troi_VN.mp3",
+          },
+          { title: "Múa xạp xòe hoa", path: "music/mua_xap_xoe_hoa.mp3" },
+          { title: "Việt Nam MyHome", path: "music/VIETNAM  My Home.mp3" },
+        ];
+
+        let currentTrackIndex = 0;
+        let player;
+        let meter; // Để đo cường độ âm thanh cho hiệu ứng thở
+        let isPlayerReady = false;
+
+        // Cập nhật giao diện (chỉ icon)
+        const updateUI = (state) => {
+          const isPlaying = state === "started";
+          playIcon.classList.toggle("hidden", isPlaying);
+          pauseIcon.classList.toggle("hidden", !isPlaying);
+        };
+
+        // Tải bài hát (phiên bản ổn định)
+        const loadTrack = (trackIndex, shouldPlay) => {
+          isPlayerReady = false;
+
+          if (player) {
+            // Dừng và giải phóng tài nguyên một cách an toàn
+            player.stop();
+            Tone.Transport.stop();
+            player.unsync();
+            player.dispose();
+          }
+          if (meter) {
+            meter.dispose();
+          }
+
+          currentTrackIndex = trackIndex;
+
+          player = new Tone.Player({
+            url: playlist[trackIndex].path,
+            loop: false,
+            volume: Tone.gainToDb(volumeSlider.value), // Đặt âm lượng ban đầu
+            onload: () => {
+              isPlayerReady = true;
+              if (shouldPlay) {
+                Tone.Transport.start();
+              }
+              // SỬA LỖI: Cập nhật UI ngay khi transport thay đổi trạng thái
+              // Điều này đảm bảo icon luôn đúng sau khi nhấn Next
+              updateUI(Tone.Transport.state);
+            },
+          }).toDestination();
+
+          meter = new Tone.Meter();
+          player.connect(meter);
+          player.sync().start(0);
+        };
+
+        // Chơi bài tiếp theo
+        const playNextTrack = () => {
+          const wasPlaying = Tone.Transport.state === "started";
+          const nextIndex = (currentTrackIndex + 1) % playlist.length;
+          loadTrack(nextIndex, wasPlaying || true); // Luôn phát nhạc khi nhấn Next
+        };
+
+        // Sự kiện cho nút Play/Pause
+        playPauseBtn.addEventListener("click", async () => {
+          if (Tone.context.state !== "running") await Tone.start();
+          if (!isPlayerReady) return;
+
+          if (Tone.Transport.state === "started") {
+            Tone.Transport.pause();
+          } else {
+            Tone.Transport.start();
+          }
+          updateUI(Tone.Transport.state);
+        });
+
+        // Sự kiện nút Next
+        nextTrackBtn.addEventListener("click", () => {
+          if (!isPlayerReady) return;
+          playNextTrack();
+        });
+
+        // Sự kiện cho thanh Volume
+        volumeSlider.addEventListener("input", (e) => {
+          if (player) {
+            player.volume.value = Tone.gainToDb(e.target.value);
+          }
+        });
+
+        // Vòng lặp cập nhật hiệu ứng
+        function updateLoop() {
+          requestAnimationFrame(updateLoop);
+          if (!isPlayerReady) return;
+
+          if (Tone.Transport.state === "started") {
+            // Hiệu ứng "thở" bằng box-shadow
+            const level = Tone.dbToGain(meter.getValue()); // Chuyển đổi dB sang thang 0-1
+            const breathSize = level * 12 + 4; // Điều chỉnh độ nhạy của hiệu ứng (tăng số 12 để mạnh hơn)
+            const breathOpacity = level * 0.5 + 0.2; // Độ mờ của hiệu ứng
+            playPauseBtn.style.boxShadow = `0 0 ${breathSize}px rgba(138, 176, 151, ${breathOpacity})`;
+          } else {
+            playPauseBtn.style.boxShadow = "none"; // Tắt hiệu ứng khi dừng
+          }
+        }
+
+        // Tự động chuyển bài KHI NÓ KẾT THÚC (chỉ một lần duy nhất)
+        Tone.Transport.on("stop", () => {
+          updateUI("stopped");
+          // Chỉ tự động chuyển bài khi nó kết thúc tự nhiên
+          if (player && player.loaded && Tone.Transport.progress > 0.99) {
+            setTimeout(playNextTrack, 150);
+          }
+        });
+
+        // Khởi tạo
+        loadTrack(0, false);
+        updateLoop();
+
+        // --- KẾT THÚC TRÌNH PHÁT NHẠC ---
+
+        // --- BẢN ĐỒ TƯƠNG TÁC (MAPBOX) ---
+        const mapLocations = [
+          // Lấy tọa độ gần đúng cho các địa điểm
+          { id: "cau-vang", coords: [107.9946, 15.9961], zoom: 14 },
+          { id: "cau-rong", coords: [108.2269, 16.0614], zoom: 15 },
+          { id: "ba-na-hills", coords: [107.9991, 15.9954], zoom: 13 },
+          { id: "my-khe", coords: [108.2494, 16.0559], zoom: 14 },
+          { id: "ngu-hanh-son", coords: [108.2631, 16.0051], zoom: 15 },
+          { id: "sun-wheel", coords: [108.2185, 16.0408], zoom: 16 },
+          { id: "ban-dao-son-tra", coords: [108.3039, 16.1159], zoom: 12 },
+          { id: "chua-linh-ung", coords: [108.2936, 16.1009], zoom: 15 },
+          { id: "hoi-an", coords: [108.329, 15.8801], zoom: 14 },
+          { id: "nui-than-tai", coords: [108.053, 16.0125], zoom: 14 },
+        ];
+
+        let map = null;
+        let markers = [];
+        let activePopup = null; // MỚI: Di chuyển biến ra đây
+
+        const initMap = () => {
+          // BẠN CẦN CUNG CẤP API KEY CỦA MÌNH TẠI ĐÂY
+          mapboxgl.accessToken =
+            "pk.eyJ1IjoiY3VxdWFuYmFsYTEyMyIsImEiOiJjbWJwNXB5ODkwMTBjMmxxMnkyMDJvMmp3In0.tyApat-yhPZrf3SsdvMEFw";
+          map = new mapboxgl.Map({
+            container: "map-container",
+            style: "mapbox://styles/mapbox/dark-v11", // Phong cách nền tối từ Mapbox
+            center: [108.2208, 16.0678], // Trung tâm Đà Nẵng
+            zoom: 11.5,
+          });
+
+          map.on("load", renderMapContent);
+        };
+
+        // Thay thế TOÀN BỘ hàm renderMapContent cũ của bạn bằng hàm này
+
+        const renderMapContent = () => {
+          // MỚI: Luôn đóng popup đang mở trước khi vẽ lại bất cứ thứ gì
+          if (activePopup) {
+            activePopup.remove();
+            activePopup = null;
+          }
+
+          // Xóa các marker cũ nếu có
+          markers.forEach((marker) => marker.remove());
+          markers = [];
+
+          const lang = currentLanguage;
+          const destinations = data[lang].destinations;
+          const listContainer = document.getElementById("map-locations-list");
+          listContainer.innerHTML = "";
+
+          // XÓA: Dòng "let activePopup = null;" ở đây đã được xóa đi
+
+          mapLocations.forEach((loc) => {
+            const destInfo = destinations.find((d) => d.id === loc.id);
+            if (!destInfo) return;
+
+            const el = document.createElement("div");
+            el.className = "custom-marker";
+            el.dataset.id = loc.id;
+
+            const listItem = document.createElement("div");
+            listItem.className = "location-item";
+            listItem.textContent = destInfo.title; // Tiêu đề danh sách được dịch
+            listItem.dataset.id = loc.id;
+            listContainer.appendChild(listItem);
+
+            const flyToLocation = () => {
+              if (activePopup) {
+                activePopup.remove();
+                activePopup = null;
+              }
+              document
+                .querySelectorAll(".custom-marker, .location-item")
+                .forEach((item) => item.classList.remove("active"));
+
+              map.flyTo({
+                center: loc.coords,
+                zoom: loc.zoom,
+                essential: true,
+                speed: 1.2,
+              });
+
+              setTimeout(() => {
+                // Nội dung popup giờ sẽ lấy từ dữ liệu đã được dịch
+                const popupContent = `
+          <div>
+            <img src="${destInfo.image}" alt="${destInfo.title}" style="width: 100%; height: 140px; object-fit: cover;">
+            <div style="padding: 15px;">
+              <h4 style="font-weight: 700; color: var(--brand-primary); margin-bottom: 5px;">${destInfo.title}</h4>
+              <p style="font-size: 13px; line-height: 1.4;">${destInfo.shortDesc}</p>
+            </div>
+          </div>
+        `;
+                activePopup = new mapboxgl.Popup({
+                  offset: 30,
+                  closeOnClick: false,
+                })
+                  .setLngLat(loc.coords)
+                  .setHTML(popupContent)
+                  .addTo(map);
+
+                activePopup.on("close", () => {
+                  el.classList.remove("active");
+                  listItem.classList.remove("active");
+                  activePopup = null;
+                });
+              }, 300);
+
+              el.classList.add("active");
+              listItem.classList.add("active");
+            };
+
+            const marker = new mapboxgl.Marker(el)
+              .setLngLat(loc.coords)
+              .addTo(map);
+            markers.push(marker);
+
+            el.addEventListener("click", (e) => {
+              e.stopPropagation();
+              flyToLocation();
+            });
+            listItem.addEventListener("click", flyToLocation);
+          });
+
+          map.on("click", () => {
+            if (activePopup) {
+              activePopup.remove();
+              activePopup = null;
+              document
+                .querySelectorAll(".custom-marker, .location-item")
+                .forEach((item) => item.classList.remove("active"));
+            }
+          });
+        };
+
+        // Thêm các key ngôn ngữ mới cho phần bản đồ
+        languageContent.vi.map = {
+          title: "Bản Đồ Trực Quan",
+          desc: "Khám phá vị trí các điểm đến mang tính biểu tượng của Đà Nẵng. Nhấn vào một điểm trên bản đồ hoặc trong danh sách để xem chi tiết.",
+        };
+        languageContent.en.map = {
+          title: "Interactive Map",
+          desc: "Explore the locations of Da Nang's iconic destinations. Click on a point on the map or in the list to see details.",
+        };
+
+        // Khởi tạo bản đồ
+        initMap();
+
+        // Ghi đè hàm switchLanguage để render lại nội dung bản đồ khi đổi ngôn ngữ
+        const originalSwitchLanguage = switchLanguage;
+        switchLanguage = (lang, force = false) => {
+          originalSwitchLanguage(lang, force);
+          if (map && map.loaded()) {
+            renderMapContent();
+          }
+        };
+
+        // --- GỌI HÀM KHỞI TẠO ---
+        switchLanguage("vi", true); // Mặc định là tiếng Việt, ép buộc chạy lần đầu
+      });
     </script>
+    <div id="music-player" class="fixed bottom-6 left-6 z-[100]">
+      <div id="player-wrapper" class="relative flex items-center h-14 group">
+        <button
+          id="play-pause-btn"
+          class="relative flex-shrink-0 w-14 h-14 flex items-center justify-center text-white bg-[var(--brand-secondary)] hover:bg-[var(--brand-primary)] rounded-full transition-all duration-300 shadow-lg z-10"
+        >
+          <i data-lucide="play" id="play-icon" class="w-7 h-7 ml-1"></i>
+          <i data-lucide="pause" id="pause-icon" class="w-7 h-7 hidden"></i>
+        </button>
+
+        <div
+          id="player-controls"
+          class="absolute left-10 h-14 flex items-center bg-[var(--bg-medium)] bg-opacity-90 backdrop-blur-sm rounded-r-full shadow-lg pl-8 pr-4 space-x-2 transition-all duration-300 ease-in-out opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto w-0 group-hover:w-48"
+        >
+          <button
+            id="next-track-btn"
+            class="p-2 text-white hover:text-[var(--brand-primary)] transition-colors"
+          >
+            <i data-lucide="skip-forward" class="w-5 h-5"></i>
+          </button>
+
+          <div class="flex items-center space-x-2 flex-grow">
+            <i
+              data-lucide="volume-2"
+              class="w-5 h-5 text-gray-300 flex-shrink-0"
+            ></i>
+            <input
+              type="range"
+              id="volume-slider"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.5"
+              class="w-full"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
