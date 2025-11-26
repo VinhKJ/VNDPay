@@ -1,669 +1,664 @@
- (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a/index.html b/index.html
-index fcede16a1acf35a3b8324a6e92e197d285d130f4..915b9065b82c503c85dead5e74c7e989ba8ca24d 100644
---- a/index.html
-+++ b/index.html
-@@ -1,32 +1,32 @@
- <!DOCTYPE html>
- <html lang="vi" class="scroll-smooth">
-   <head>
-     <meta charset="UTF-8" />
-     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
--    <title>DanaSoul - Chạm Vào Vẻ Đẹp Đà Nẵng</title>
--    <link rel="icon" type="image/png" href="DanaSoulLogo.png" />
-+    <title>VNDPay - Chạm Vào Vẻ Đẹp Đà Nẵng</title>
-+    <link rel="icon" type="image/png" href="VNDPayLogo.png" />
-     <link
-       href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
-       rel="stylesheet"
-     />
-     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-     <script src="https://cdn.tailwindcss.com"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
-     <script src="https://unpkg.com/lucide@latest"></script>
- 
-     <link rel="preconnect" href="https://fonts.googleapis.com" />
-     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-     <link
-       href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap"
-       rel="stylesheet"
-     />
-     <link
-       href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap"
-       rel="stylesheet"
-     />
-     <style>
-       #farewell h2 {
-         font-family: "Dancing Script", cursive;
-       }
-@@ -479,67 +479,67 @@
-         outline: none;
-         transition: opacity 0.2s;
-       }
-       #volume-slider::-webkit-slider-thumb {
-         -webkit-appearance: none;
-         appearance: none;
-         width: 14px;
-         height: 14px;
-         background: var(--text-light);
-         cursor: pointer;
-         border-radius: 50%;
-         border: 2px solid var(--brand-secondary);
-       }
-       #volume-slider::-moz-range-thumb {
-         width: 14px;
-         height: 14px;
-         background: var(--text-light);
-         cursor: pointer;
-         border-radius: 50%;
-         border: 2px solid var(--brand-secondary);
-       }
-     </style>
-   </head>
-   <body class="antialiased">
-     <div id="preloader">
--      <h1 class="font-logo text-6xl text-white">DanaSoul</h1>
-+      <h1 class="font-logo text-6xl text-white">VNDPay</h1>
-     </div>
- 
-     <div class="cursor-dot"></div>
-     <div class="cursor-outline"></div>
- 
-     <header
-       id="main-header"
-       class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-     >
-       <div class="container mx-auto px-6 py-4">
-         <div class="flex items-center justify-between">
-           <a
-             href="#"
-             class="font-logo text-4xl text-white magnetic-btn"
-             id="logo"
--            >DanaSoul</a
-+            >VNDPay</a
-           >
-           <nav class="hidden md:flex items-center space-x-8">
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VNDPay - Chạm Vào Vẻ Đẹp Đà Nẵng</title>
+    <link rel="icon" type="image/png" href="VNDPayLogo.png" />
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      #farewell h2 {
+        font-family: "Dancing Script", cursive;
+      }
+      /* Các style tùy chỉnh khác giữ nguyên */
+      :root {
+        --brand-primary: #00d2aa; /* Màu xanh ngọc (VNDPay style suggestion) */
+        --brand-secondary: #f0f0f0;
+        --bg-dark: #0f172a;
+        --bg-medium: #1e293b;
+        --text-light: #e2e8f0;
+        --text-dark: #94a3b8;
+      }
+      body {
+        font-family: "Be Vietnam Pro", sans-serif;
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        overflow-x: hidden;
+      }
+      /* ... (Giữ nguyên các CSS slider, scrollbar của bạn) */
+      #volume-slider {
+        -webkit-appearance: none;
+        width: 100px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+        outline: none;
+        transition: opacity 0.2s;
+      }
+      #volume-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        background: var(--text-light);
+        cursor: pointer;
+        border-radius: 50%;
+        border: 2px solid var(--brand-secondary);
+      }
+    </style>
+  </head>
+  <body class="antialiased">
+    <div id="preloader" class="fixed inset-0 z-[60] bg-black flex items-center justify-center transition-opacity duration-500">
+      <h1 class="font-logo text-6xl text-white font-bold">VNDPay</h1>
+    </div>
+
+    <div class="cursor-dot fixed w-2 h-2 bg-white rounded-full pointer-events-none z-50 mix-blend-difference hidden md:block"></div>
+    <div class="cursor-outline fixed w-8 h-8 border border-white rounded-full pointer-events-none z-50 mix-blend-difference transition-transform duration-100 hidden md:block"></div>
+
+    <header
+      id="main-header"
+      class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-opacity-90 bg-black backdrop-blur-sm"
+    >
+      <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+          <a
+            href="#"
+            class="font-logo text-4xl text-white font-bold magnetic-btn"
+            id="logo"
+            >VNDPay</a
+          >
+          <nav class="hidden md:flex items-center space-x-8">
+            <a
+              href="#about"
+              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              data-lang-key="nav.about"
+              >Giới thiệu</a
+            >
+            <a
+              href="#destinations"
+              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              data-lang-key="nav.destinations"
+              >Điểm đến</a
+            >
+            <a
+              href="#culture"
+              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              data-lang-key="nav.culture"
+              >Văn hóa</a
+            >
+            <a
+              href="#history"
+              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              data-lang-key="nav.history"
+              >Lịch sử</a
+            >
              <a
-               href="#about"
-               class="nav-link text-white font-medium"
-               data-lang-key="nav.about"
-               >Giới thiệu</a
-             >
-             <a
-               href="#destinations"
-               class="nav-link text-white font-medium"
-               data-lang-key="nav.destinations"
-               >Điểm đến</a
-             >
-             <a
-               href="#culture"
-               class="nav-link text-white font-medium"
-               data-lang-key="nav.culture"
-               >Văn hóa</a
-             >
-             <a
-               href="#history"
-               class="nav-link text-white font-medium"
-               data-lang-key="nav.history"
-               >Lịch sử</a
-@@ -629,84 +629,84 @@
-         >
- 
-         <div
-           class="lang-switcher flex items-center justify-center text-white text-sm font-semibold space-x-4 py-4 border-t border-[var(--brand-secondary)]"
-         >
-           <button data-lang="vi" class="active">TIẾNG VIỆT</button>
-           <span>|</span>
-           <button data-lang="en">ENGLISH</button>
-         </div>
-       </div>
-     </header>
- 
-     <main>
-       <section
-         id="hero"
-         class="relative h-screen w-full flex items-center justify-center text-center text-white overflow-hidden"
-       >
-         <div class="absolute inset-0 bg-black opacity-40 z-10"></div>
-         <div id="hero-slideshow" class="absolute inset-0 w-full h-full"></div>
-         <div class="relative z-20 p-6">
-           <h1
-             id="hero-title"
-             class="font-logo text-6xl md:text-8xl lg:text-9xl text-white mb-4 opacity-0"
-             style="text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7)"
-           >
--            DanaSoul
-+            VNDPay
-           </h1>
-           <p
-             id="hero-subtitle"
-             class="text-lg md:text-2xl max-w-2xl mx-auto text-[var(--text-light)] opacity-0"
-             data-lang-key="hero.subtitleNew"
-           >
-             Khám phá vẻ đẹp tiềm ẩn của thành phố đáng sống nhất Việt Nam.
-           </p>
-         </div>
-         <div
-           id="scroll-down-indicator"
-           class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-20"
-         >
-           <i data-lucide="arrow-down" class="w-8 h-8 text-white"></i>
-         </div>
-       </section>
- 
-       <section id="about" class="py-24 bg-transparent">
-         <div class="container mx-auto px-6 fade-in-section">
-           <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-             <div class="text-center lg:text-left">
-               <h2
-                 class="text-3xl md:text-4xl font-bold text-white mb-6"
-                 data-lang-key="about.welcomeTitle"
-               >
--                Chào mừng đến với DanaSoul
-+                Chào mừng đến với VNDPay
-               </h2>
-               <p
-                 class="text-[var(--text-dark)] text-lg leading-relaxed mb-4"
-                 data-lang-key="about.intro1"
-               >
-                 Khám phá Đà Nẵng – nơi hội tụ vẻ đẹp thiên nhiên, chiều sâu văn
--                hóa và nhịp sống hiện đại. DanaSoul dẫn lối bạn về với linh hồn
-+                hóa và nhịp sống hiện đại. VNDPay dẫn lối bạn về với linh hồn
-                 miền Trung: một Việt Nam kiên cường, đậm đà bản sắc và luôn vươn
-                 mình ra biển lớn.
-               </p>
-               <p class="text-[var(--text-dark)]" data-lang-key="about.intro2">
-                 Nằm giữa dải đất miền Trung duyên dáng, Đà Nẵng là một thành phố
-                 trẻ trung, năng động và đầy sức sống. Từ Cầu Rồng phun lửa, Cầu
-                 Vàng lơ lửng giữa trời, đến bán đảo Sơn Trà hoang sơ hay Phố cổ
-                 Hội An rêu phong, Đà Nẵng mở ra hành trình khám phá đầy cảm hứng
-                 – nơi bạn không chỉ dừng chân, mà còn lưu giữ cảm xúc.
-               </p>
-             </div>
-             <div
-               class="relative h-80 lg:h-96 rounded-lg overflow-hidden shadow-2xl"
-             >
-               <img
-                 src="images/Gioi thieu/cau-rong-da-nang-saigon-travel.jpg"
-                 alt="Cầu Rồng"
-                 class="about-collage-img absolute inset-0 w-full h-full object-cover opacity-0"
-               />
-               <img
-                 src="images/Gioi thieu/Hang-động-núi-Ngũ-Hành-Sơn-2.jpg"
-                 alt="Ngũ Hành Sơn"
-                 class="about-collage-img absolute inset-0 w-full h-full object-cover opacity-0"
-               />
-               <img
-@@ -861,51 +861,51 @@
- 
-           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-             <div class="lg:col-span-1">
-               <ul id="cuisine-menu" class="space-y-2"></ul>
-             </div>
-             <div
-               id="cuisine-details-container"
-               class="lg:col-span-2 bg-[var(--bg-medium)] rounded-lg p-6 shadow-lg"
-             ></div>
-           </div>
-         </div>
-       </section>
- 
-       <section id="planner" class="py-24 bg-[var(--bg-medium)]">
-         <div class="container mx-auto px-6 fade-in-section">
-           <h2
-             class="text-3xl md:text-4xl font-bold text-white mb-4 text-center"
-             data-lang-key="planner.title"
-           >
-             Lập Kế Hoạch Chuyến Đi
-           </h2>
-           <p
-             class="text-[var(--text-dark)] max-w-2xl mx-auto mb-12 text-center"
-             data-lang-key="planner.desc"
-           >
--            Chọn các tiêu chí bên dưới, DanaSoul sẽ gợi ý một hành trình được
-+            Chọn các tiêu chí bên dưới, VNDPay sẽ gợi ý một hành trình được
-             thiết kế dành riêng cho bạn.
-           </p>
- 
-           <div
-             class="max-w-5xl mx-auto bg-[var(--bg-dark)] p-8 rounded-lg shadow-2xl"
-           >
-             <div class="mb-8">
-               <div class="mb-6">
-                 <label
-                   class="block mb-3 text-lg font-medium text-[var(--text-light)]"
-                   data-lang-key="planner.daysLabel"
-                   >1. Bạn muốn đi bao nhiêu ngày?</label
-                 >
-                 <div
-                   id="planner-days-options"
-                   class="flex flex-wrap gap-3"
-                 ></div>
-               </div>
-               <div>
-                 <label
-                   class="block mb-3 text-lg font-medium text-[var(--text-light)]"
-                   data-lang-key="planner.styleLabel"
-                   >2. Phong cách chuyến đi của bạn là gì?</label
-                 >
-                 <div
-@@ -921,97 +921,97 @@
-             ></div>
-           </div>
-         </div>
-       </section>
- 
-       <section
-         id="farewell"
-         class="relative min-h-screen flex items-center justify-center text-center text-white overflow-hidden"
-       >
-         <div class="absolute inset-0 bg-black opacity-60 z-10"></div>
-         <img
-           src="images/Hen gap lai/da_nang_ve_dem.jpg"
-           alt="Đà Nẵng về đêm"
-           class="absolute inset-0 w-full h-full object-cover"
-         />
-         <canvas id="farewell-canvas"></canvas>
-         <div class="relative z-20 p-6 fade-in-section">
-           <h2 class="text-5xl md:text-7xl mb-4" data-lang-key="farewell.title">
-             Hẹn Gặp Lại
-           </h2>
-           <p
-             class="text-lg md:text-xl max-w-2xl mx-auto text-[var(--text-dark)]"
-             data-lang-key="farewell.desc"
-           >
-             Hành trình khám phá có thể kết thúc, nhưng những ký ức về Đà Nẵng sẽ
--            còn mãi. DanaSoul hy vọng đã mang đến cho bạn những cảm hứng và hẹn
-+            còn mãi. VNDPay hy vọng đã mang đến cho bạn những cảm hứng và hẹn
-             gặp lại bạn ở thành phố xinh đẹp này.
-           </p>
-         </div>
-       </section>
- 
-       <section id="contact" class="py-24 bg-[var(--bg-medium)]">
-         <div class="container mx-auto px-6 text-center fade-in-section">
-           <h2
-             class="text-3xl md:text-4xl font-bold text-white mb-4"
-             data-lang-key="contact.title"
-           >
-             Liên Hệ Với Chúng Tôi
-           </h2>
-           <p
-             class="text-[var(--text-dark)] max-w-2xl mx-auto mb-8"
-             data-lang-key="contact.desc"
-           >
-             Bạn có câu hỏi hoặc muốn chia sẻ trải nghiệm? Đừng ngần ngại gửi tin
--            nhắn cho DanaSoul.
-+            nhắn cho VNDPay.
-           </p>
-           <button
-             id="open-contact-modal-btn"
-             class="magnetic-btn bg-[var(--brand-primary)] hover:bg-opacity-80 text-[var(--bg-dark)] font-bold px-8 py-4 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl text-lg"
-             data-lang-key="contact.button"
-           >
-             Gửi Lời Nhắn
-           </button>
-         </div>
-       </section>
-     </main>
- 
-     <footer class="bg-black text-[var(--text-dark)]">
-       <div class="container mx-auto px-6 py-8">
-         <div class="flex justify-center mb-6">
-           <a href="#">
--            <img src="DanaSoulLogo.png" alt="DanaSoul Logo" class="h-40" />
-+            <img src="VNDPayLogo.png" alt="VNDPay Logo" class="h-40" />
-           </a>
-         </div>
-         <div
-           class="flex flex-col md:flex-row justify-between items-center text-center md:text-left"
-         >
-           <p
-             class="text-sm text-gray-500 mb-4 md:mb-0"
-             data-lang-key="footer.copyright"
-           >
--            © 2025 DanaSoul. Một sản phẩm dự thi "Hành trình Thống nhất".
-+            © 2025 VNDPay. Một sản phẩm dự thi "NEO-UP 2025".
-           </p>
-           <div class="flex space-x-6">
-             <a href="#" class="hover:text-white"
-               ><i data-lucide="facebook" class="w-6 h-6"></i
-             ></a>
-             <a href="#" class="hover:text-white"
-               ><i data-lucide="instagram" class="w-6 h-6"></i
-             ></a>
-             <a href="#" class="hover:text-white"
-               ><i data-lucide="twitter" class="w-6 h-6"></i
-             ></a>
-             <a href="#" class="hover:text-white"
-               ><i data-lucide="youtube" class="w-6 h-6"></i
-             ></a>
-           </div>
-         </div>
-       </div>
-     </footer>
- 
-     <div
-       id="contact-modal"
-       class="fixed inset-0 bg-black bg-opacity-70 z-[60] flex items-center justify-center p-4 hidden"
-     >
-       <div
-         id="contact-modal-content"
-@@ -1155,229 +1155,229 @@
-               opacity: 1,
-               ease: "power3.out",
-               delay: 0.4,
-             });
-           }, 1800);
-         });
- 
-         // --- ĐA NGÔN NGỮ (i18n) & DỮ LIỆU ---
-         const languageContent = {
-           vi: {
-             nav: {
-               about: "Giới thiệu",
-               destinations: "Điểm đến",
-               culture: "Văn hóa",
-               history: "Lịch sử",
-               cuisine: "Ẩm thực",
-               // farewell: "Tạm biệt", // Xóa dòng này
-               planner: "Kế hoạch",
-               contact: "Liên hệ",
-             },
-             hero: {
-               subtitleNew:
-                 "Khám phá vẻ đẹp tiềm ẩn của thành phố đáng sống nhất Việt Nam.",
-             },
-             about: {
--              welcomeTitle: "Chào mừng đến với DanaSoul",
-+              welcomeTitle: "Chào mừng đến với VNDPay",
-               intro1:
--                "Khám phá Đà Nẵng – nơi hội tụ vẻ đẹp thiên nhiên, chiều sâu văn hóa và nhịp sống hiện đại. DanaSoul dẫn lối bạn về với linh hồn miền Trung: một Việt Nam kiên cường, đậm đà bản sắc và luôn vươn mình ra biển lớn.",
-+                "Khám phá Đà Nẵng – nơi hội tụ vẻ đẹp thiên nhiên, chiều sâu văn hóa và nhịp sống hiện đại. VNDPay dẫn lối bạn về với linh hồn miền Trung: một Việt Nam kiên cường, đậm đà bản sắc và luôn vươn mình ra biển lớn.",
-               intro2:
-                 "Nằm giữa dải đất miền Trung duyên dáng, Đà Nẵng là một thành phố trẻ trung, năng động và đầy sức sống. Từ Cầu Rồng phun lửa, Cầu Vàng lơ lửng giữa trời, đến bán đảo Sơn Trà hoang sơ hay Phố cổ Hội An rêu phong, Đà Nẵng mở ra hành trình khám phá đầy cảm hứng – nơi bạn không chỉ dừng chân, mà còn lưu giữ cảm xúc.",
-             },
-             destinations: {
-               title: "Điểm Đến Biểu Tượng",
-               filter: {
-                 all: "Tất cả",
-                 architecture: "Kiến trúc",
-                 nature: "Thiên nhiên",
-                 culture: "Văn hoá",
-               },
-             },
-             culture: {
-               title: "Bản Sắc Văn Hóa Miền Trung",
-               intro:
-                 "Đà Nẵng không chỉ là thành phố của những cây cầu, mà còn là một không gian văn hóa đặc sắc, nơi giao hòa giữa truyền thống và hiện đại, giữa bản sắc địa phương và tinh thần hội nhập.",
-               people: {
-                 title: "Con Người Đà Nẵng",
-                 desc: "Con người Đà Nẵng nổi bật bởi sự hiền hòa, thật thà, thân thiện và trọng nghĩa tình. Trong cách giao tiếp, cư xử, người Đà Nẵng luôn toát lên sự chân thành, mến khách. Chính điều này đã khiến du khách đến Đà Nẵng không chỉ 'xem cảnh mà còn “gặp người'. Tinh thần sống kỷ cương, văn minh, ý thức bảo vệ môi trường, ứng xử cộng đồng tốt là những giá trị văn hóa hiện đại đáng học hỏi.",
-               },
-               festivals: {
-                 title: "Lễ Hội Sôi Động",
-               },
-               heritage: {
-                 title: "Di Sản Trăm Năm",
-               },
-             },
-             cuisine: {
-               title: "Hành Trình Ẩm Thực",
-               desc: "Khám phá Đà Nẵng qua hương vị là một trải nghiệm không thể thiếu. Mỗi món ăn là một câu chuyện về văn hoá, về sản vật địa phương và sự khéo léo của người dân nơi đây.",
-               flavorTitle: "Hương Vị",
-               locationTitle: "Gợi Ý Điểm Bán",
-             },
-             planner: {
-               title: "Lập Kế Hoạch Chuyến Đi",
--              desc: "Chọn các tiêu chí bên dưới, DanaSoul sẽ gợi ý một hành trình được thiết kế dành riêng cho bạn.",
-+              desc: "Chọn các tiêu chí bên dưới, VNDPay sẽ gợi ý một hành trình được thiết kế dành riêng cho bạn.",
-               daysLabel: "1. Bạn muốn đi bao nhiêu ngày?",
-               styleLabel: "2. Phong cách chuyến đi của bạn là gì?",
-               styles: {
-                 discovery: "Khám Phá",
-                 relax: "Nghỉ Dưỡng",
-                 culture: "Văn Hóa",
-               },
-               resultTitle: "Lịch trình gợi ý cho bạn:",
-               noResult:
-                 "Vui lòng chọn số ngày và ít nhất một phong cách để tạo lịch trình.",
-               day: "Ngày",
-               day_unit: "ngày",
-               morning: "Sáng",
-               afternoon: "Chiều",
-               evening: "Tối",
-             },
-             farewell: {
-               title: "Hẹn Gặp Lại",
--              desc: "Hành trình khám phá có thể kết thúc, nhưng những ký ức về Đà Nẵng sẽ còn mãi. DanaSoul hy vọng đã mang đến cho bạn những cảm hứng và hẹn gặp lại bạn ở thành phố xinh đẹp này.",
-+              desc: "Hành trình khám phá có thể kết thúc, nhưng những ký ức về Đà Nẵng sẽ còn mãi. VNDPay hy vọng đã mang đến cho bạn những cảm hứng và hẹn gặp lại bạn ở thành phố xinh đẹp này.",
-             },
-             contact: {
-               title: "Liên Hệ Với Chúng Tôi",
--              desc: "Bạn có câu hỏi hoặc muốn chia sẻ trải nghiệm? Đừng ngần ngại gửi tin nhắn cho DanaSoul.",
-+              desc: "Bạn có câu hỏi hoặc muốn chia sẻ trải nghiệm? Đừng ngần ngại gửi tin nhắn cho VNDPay.",
-               button: "Gửi Lời Nhắn",
-               form: {
-                 title: "Gửi Lời Nhắn Của Bạn",
-                 name: "Tên của bạn",
-                 email: "Email",
-                 message: "Lời nhắn",
-                 send: "Gửi",
-               },
-               success: {
-                 title: "Cảm ơn bạn!",
-                 desc: "Lời nhắn của bạn đã được gửi. Chúng tôi sẽ sớm liên hệ lại với bạn.",
-               },
-             },
-             footer: {
-               copyright:
--                '© 2025 DanaSoul. Một sản phẩm dự thi "Hành trình Thống nhất".',
-+                '© 2025 VNDPay. Một sản phẩm dự thi "NEO-UP 2025".',
-             },
-             modal: {
-               tabs: { overview: "Tổng quan", history: "Lịch sử", tips: "Mẹo" },
-               no_history: "Chưa có thông tin lịch sử.",
-               no_tips: "Chưa có mẹo nào.",
-             },
-           },
-           en: {
-             nav: {
-               about: "About",
-               destinations: "Destinations",
-               culture: "Culture",
-               history: "History",
-               cuisine: "Cuisine",
-               // farewell: "Farewell", // Xóa dòng này
-               planner: "Planner",
-               contact: "Contact",
-             },
-             hero: {
-               subtitleNew:
-                 "Discover the hidden beauty of Vietnam's most livable city.",
-             },
-             about: {
--              welcomeTitle: "Welcome to DanaSoul",
-+              welcomeTitle: "Welcome to VNDPay",
-               intro1:
--                "Explore Da Nang – a convergence of natural beauty, cultural depth, and modern vitality. DanaSoul guides you to the soul of the Central Region: a resilient Vietnam, rich in identity, and always reaching for the great sea.",
-+                "Explore Da Nang – a convergence of natural beauty, cultural depth, and modern vitality. VNDPay guides you to the soul of the Central Region: a resilient Vietnam, rich in identity, and always reaching for the great sea.",
-               intro2:
-                 "Nestled in the charming Central Coast, Da Nang is a young, dynamic, and vibrant city. From the fire-breathing Dragon Bridge and the sky-high Golden Bridge to the pristine Son Tra Peninsula or the ancient town of Hoi An, Da Nang offers an inspiring journey where you don't just visit, you create lasting memories.",
-             },
-             destinations: {
-               title: "Iconic Destinations",
-               filter: {
-                 all: "All",
-                 architecture: "Architecture",
-                 nature: "Nature",
-                 culture: "Culture",
-               },
-             },
-             culture: {
-               title: "The Cultural Identity of Central Vietnam",
-               intro:
-                 "Da Nang is not only a city of bridges but also a unique cultural space, where tradition and modernity, local identity and a spirit of integration harmonize.",
-               people: {
-                 title: "The People of Da Nang",
-                 desc: "The people of Da Nang are known for being gentle, honest, friendly, and loyal. In communication and behavior, they always exude sincerity and hospitality. This is what makes visitors to Da Nang not only 'see the sights' but also 'meet the people'. The spirit of disciplined, civilized living, environmental awareness, and good community conduct are admirable modern cultural values.",
-               },
-               festivals: {
-                 title: "Vibrant Festivals",
-               },
-               heritage: {
-                 title: "Centuries of Heritage",
-               },
-             },
-             cuisine: {
-               title: "A Culinary Journey",
-               desc: "Exploring Da Nang through its flavors is an essential experience. Each dish tells a story of culture, local produce, and the skill of its people.",
-               flavorTitle: "Flavor",
-               locationTitle: "Where to Try",
-             },
-             planner: {
-               title: "Plan Your Trip",
--              desc: "Select the criteria below, and DanaSoul will suggest a tailor-made itinerary for you.",
-+              desc: "Select the criteria below, and VNDPay will suggest a tailor-made itinerary for you.",
-               daysLabel: "1. How many days is your trip?",
-               styleLabel: "2. What is your travel style?",
-               styles: {
-                 discovery: "Discovery",
-                 relax: "Relaxation",
-                 culture: "Cultural",
-               },
-               resultTitle: "Your Suggested Itinerary:",
-               noResult:
-                 "Please select the number of days and at least one travel style to generate an itinerary.",
-               day: "Day",
-               day_unit: "days",
-               morning: "Morning",
-               afternoon: "Afternoon",
-               evening: "Evening",
-             },
-             farewell: {
-               title: "See You Again",
--              desc: "The journey of discovery may end, but the memories of Da Nang will last forever. DanaSoul hopes to have inspired you and looks forward to seeing you again in this beautiful city.",
-+              desc: "The journey of discovery may end, but the memories of Da Nang will last forever. VNDPay hopes to have inspired you and looks forward to seeing you again in this beautiful city.",
-             },
-             contact: {
-               title: "Contact Us",
--              desc: "Have a question or want to share your experience? Feel free to send a message to DanaSoul.",
-+              desc: "Have a question or want to share your experience? Feel free to send a message to VNDPay.",
-               button: "Send a Message",
-               form: {
-                 title: "Send Your Message",
-                 name: "Your Name",
-                 email: "Email",
-                 message: "Message",
-                 send: "Send",
-               },
-               success: {
-                 title: "Thank You!",
-                 desc: "Your message has been sent. We will get back to you soon.",
-               },
-             },
-             footer: {
-               copyright:
--                '© 2025 DanaSoul. An entry for the "Unification Journey" contest.',
-+                '© 2025 VNDPay. An entry for the "NEO-UP 2025" contest.',
-             },
-             modal: {
-               tabs: { overview: "Overview", history: "History", tips: "Tips" },
-               no_history: "No history information available.",
-               no_tips: "No tips available.",
-             },
-           },
-         };
- 
-         const data = {
-           vi: {
-             destinations: [
-               {
-                 id: "cau-vang",
-                 title: "Cầu Vàng",
-                 category: "architecture",
-                 image: "images/Diem den/cau_vang.png",
-                 shortDesc: "Kiệt tác kiến trúc giữa mây ngàn Bà Nà.",
-                 fullDesc:
-                   "Nằm ở độ cao hơn 1.400 mét, Cầu Vàng là một điểm nhấn kiến trúc ấn tượng tại Sun World Bà Nà Hills. Cây cầu dài gần 150 mét, uốn lượn mềm mại như một dải lụa vàng được nâng đỡ bởi đôi bàn tay khổng lồ, rêu phong. Công trình tạo ra một lối đi bộ giữa không trung, giữa khung cảnh mờ ảo của mây và núi rừng, mang lại một trải nghiệm siêu thực cho du khách.",
-                 history:
-                   "Được khánh thành vào tháng 6 năm 2018, Cầu Vàng nhanh chóng gây tiếng vang toàn cầu. Tạp chí TIME đã vinh danh nó trong top 100 điểm đến tuyệt vời nhất thế giới, góp phần quan trọng đưa du lịch Đà Nẵng lên một tầm cao mới.",
-                 tips: "Nên đi vào buổi sáng sớm (trước 9h) hoặc chiều muộn (sau 16h) để tránh đông người và có cơ hội chụp ảnh với mây. Mặc thêm áo khoác vì thời tiết trên Bà Nà khá lạnh, kể cả vào mùa hè.",
-               },
-               {
-@@ -2274,68 +2274,68 @@
-             `
-             )
-             .join("");
- 
-           document.querySelectorAll(".filter-btn").forEach((button) => {
-             button.addEventListener("click", () => {
-               document
-                 .querySelectorAll(".filter-btn")
-                 .forEach((btn) => btn.classList.remove("active"));
-               button.classList.add("active");
-               renderDestinations(button.dataset.filter);
-             });
-           });
-         };
- 
-         const renderDestinations = (filter = "all") => {
-           destinationsGrid.innerHTML = "";
-           const currentDestinations = data[currentLanguage].destinations;
-           currentDestinations
-             .filter((d) => filter === "all" || d.category === filter)
-             .forEach((dest) => {
-               const card = document.createElement("div");
-               card.className =
-                 "destination-card bg-[var(--bg-medium)] rounded-lg shadow-lg hover:shadow-green-900/20 transition-all duration-300 transform hover:-translate-y-2 cursor-pointer";
-               card.dataset.id = dest.id;
--              card.innerHTML = `<div class="destination-card-img-wrapper rounded-t-lg"><img src="${dest.image}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1A2B22/EAE7D5?text=DanaSoul';" alt="${dest.title}" class="w-full h-56 object-cover rounded-t-lg"></div><div class="p-6"><h3 class="text-xl font-bold text-white">${dest.title}</h3><p class="text-[var(--text-dark)] mt-2">${dest.shortDesc}</p></div>`;
-+              card.innerHTML = `<div class="destination-card-img-wrapper rounded-t-lg"><img src="${dest.image}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1A2B22/EAE7D5?text=VNDPay';" alt="${dest.title}" class="w-full h-56 object-cover rounded-t-lg"></div><div class="p-6"><h3 class="text-xl font-bold text-white">${dest.title}</h3><p class="text-[var(--text-dark)] mt-2">${dest.shortDesc}</p></div>`;
-               card.addEventListener("click", () => openModal(dest.id));
-               destinationsGrid.appendChild(card);
-             });
-         };
- 
-         // --- LOGIC MODAL ---
-         const modal = document.getElementById("destination-modal");
-         const openModal = (id) => {
-           const dest = data[currentLanguage].destinations.find(
-             (d) => d.id === id
-           );
-           if (!dest) return;
-           const modalContent = document.getElementById("modal-content");
-           modalContent.innerHTML = `
-             <div class="w-full md:w-1/2 flex-shrink-0"><img src="${
-               dest.image
--            }" onerror="this.onerror=null;this.src='https://placehold.co/600x600/1A2B22/EAE7D5?text=DanaSoul';" alt="${
-+            }" onerror="this.onerror=null;this.src='https://placehold.co/600x600/1A2B22/EAE7D5?text=VNDPay';" alt="${
-             dest.title
-           }" class="w-full h-full object-cover md:rounded-l-lg rounded-t-lg md:rounded-t-none"></div>
-             <div class="w-full md:w-1/2 p-6 flex flex-col overflow-y-auto">
-                  <button id="modal-close-inner" class="absolute top-3 right-4 text-gray-400 hover:text-white z-10 text-3xl">&times;</button>
-                 <h2 class="text-3xl font-bold mb-4">${dest.title}</h2>
-                 <div id="modal-tabs" class="flex border-b border-[var(--brand-secondary)] mb-4">
-                     <button class="modal-tab active" data-tab="overview">${
-                       languageContent[currentLanguage].modal.tabs.overview
-                     }</button>
-                     <button class="modal-tab" data-tab="history">${
-                       languageContent[currentLanguage].modal.tabs.history
-                     }</button>
-                     <button class="modal-tab" data-tab="tips">${
-                       languageContent[currentLanguage].modal.tabs.tips
-                     }</button>
-                 </div>
-                 <div id="modal-tab-content" class="flex-grow">
-                     <div class="tab-pane active" data-pane="overview"><p class="text-[var(--text-dark)] leading-relaxed">${
-                       dest.fullDesc
-                     }</p></div>
-                     <div class="tab-pane hidden" data-pane="history"><p class="text-[var(--text-dark)] leading-relaxed">${
-                       dest.history ||
-                       languageContent[currentLanguage].modal.no_history
-                     }</p></div>
-                     <div class="tab-pane hidden" data-pane="tips"><p class="text-[var(--text-dark)] leading-relaxed">${
- 
-EOF
-)
+              href="#cuisine"
+              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              data-lang-key="nav.cuisine"
+              >Ẩm thực</a
+            >
+            <a
+              href="#planner"
+              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              data-lang-key="nav.planner"
+              >Kế hoạch</a
+            >
+            <a
+              href="#contact"
+              class="nav-link text-white font-medium hover:text-[var(--brand-primary)] transition-colors"
+              data-lang-key="nav.contact"
+              >Liên hệ</a
+            >
+          </nav>
+
+          <div
+            class="lang-switcher flex items-center justify-center text-white text-sm font-semibold space-x-4"
+          >
+            <button data-lang="vi" class="active hover:text-[var(--brand-primary)]">TIẾNG VIỆT</button>
+            <span>|</span>
+            <button data-lang="en" class="hover:text-[var(--brand-primary)]">ENGLISH</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section
+        id="hero"
+        class="relative h-screen w-full flex items-center justify-center text-center text-white overflow-hidden"
+      >
+        <div class="absolute inset-0 bg-black opacity-40 z-10"></div>
+        <div id="hero-slideshow" class="absolute inset-0 w-full h-full bg-[url('https://placehold.co/1920x1080/1e293b/FFF?text=Da+Nang')] bg-cover bg-center"></div>
+        <div class="relative z-20 p-6">
+          <h1
+            id="hero-title"
+            class="font-logo text-6xl md:text-8xl lg:text-9xl text-white mb-4 font-bold"
+            style="text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7)"
+          >
+            VNDPay
+          </h1>
+          <p
+            id="hero-subtitle"
+            class="text-lg md:text-2xl max-w-2xl mx-auto text-[var(--text-light)]"
+            data-lang-key="hero.subtitleNew"
+          >
+            Khám phá vẻ đẹp tiềm ẩn của thành phố đáng sống nhất Việt Nam.
+          </p>
+        </div>
+        <div
+          id="scroll-down-indicator"
+          class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-20"
+        >
+          <i data-lucide="arrow-down" class="w-8 h-8 text-white"></i>
+        </div>
+      </section>
+
+      <section id="about" class="py-24 bg-transparent">
+        <div class="container mx-auto px-6 fade-in-section">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="text-center lg:text-left">
+              <h2
+                class="text-3xl md:text-4xl font-bold text-white mb-6"
+                data-lang-key="about.welcomeTitle"
+              >
+                Chào mừng đến với VNDPay
+              </h2>
+              <p
+                class="text-[var(--text-dark)] text-lg leading-relaxed mb-4"
+                data-lang-key="about.intro1"
+              >
+                Khám phá Đà Nẵng – nơi hội tụ vẻ đẹp thiên nhiên, chiều sâu văn
+                hóa và nhịp sống hiện đại. VNDPay dẫn lối bạn về với linh hồn
+                miền Trung: một Việt Nam kiên cường, đậm đà bản sắc và luôn vươn
+                mình ra biển lớn.
+              </p>
+              <p class="text-[var(--text-dark)]" data-lang-key="about.intro2">
+                Nằm giữa dải đất miền Trung duyên dáng, Đà Nẵng là một thành phố
+                trẻ trung, năng động và đầy sức sống. Từ Cầu Rồng phun lửa, Cầu
+                Vàng lơ lửng giữa trời, đến bán đảo Sơn Trà hoang sơ hay Phố cổ
+                Hội An rêu phong, Đà Nẵng mở ra hành trình khám phá đầy cảm hứng
+                – nơi bạn không chỉ dừng chân, mà còn lưu giữ cảm xúc.
+              </p>
+            </div>
+            <div
+              class="relative h-80 lg:h-96 rounded-lg overflow-hidden shadow-2xl bg-gray-800"
+            >
+             <img
+                src="https://placehold.co/800x600/1e293b/FFF?text=Cau+Rong"
+                alt="Cầu Rồng"
+                class="absolute inset-0 w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="destinations" class="py-24 bg-[var(--bg-medium)]">
+          <div class="container mx-auto px-6">
+              <h2 class="text-3xl font-bold text-white mb-8" data-lang-key="destinations.title">Điểm Đến Biểu Tượng</h2>
+              <div class="flex space-x-4 mb-8">
+                  <button class="filter-btn active text-white px-4 py-2 rounded-full border border-white" data-filter="all" data-lang-key="destinations.filter.all">Tất cả</button>
+                  <button class="filter-btn text-gray-400 px-4 py-2 rounded-full border border-gray-600 hover:text-white" data-filter="architecture" data-lang-key="destinations.filter.architecture">Kiến trúc</button>
+                  <button class="filter-btn text-gray-400 px-4 py-2 rounded-full border border-gray-600 hover:text-white" data-filter="nature" data-lang-key="destinations.filter.nature">Thiên nhiên</button>
+              </div>
+              <div id="destinations-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  </div>
+          </div>
+      </section>
+
+      <section id="planner" class="py-24 bg-[var(--bg-medium)]">
+        <div class="container mx-auto px-6 fade-in-section">
+          <h2
+            class="text-3xl md:text-4xl font-bold text-white mb-4 text-center"
+            data-lang-key="planner.title"
+          >
+            Lập Kế Hoạch Chuyến Đi
+          </h2>
+          <p
+            class="text-[var(--text-dark)] max-w-2xl mx-auto mb-12 text-center"
+            data-lang-key="planner.desc"
+          >
+            Chọn các tiêu chí bên dưới, VNDPay sẽ gợi ý một hành trình được
+            thiết kế dành riêng cho bạn.
+          </p>
+          <div class="text-center text-gray-500">[Khu vực Planner Form]</div>
+        </div>
+      </section>
+
+      <section
+        id="farewell"
+        class="relative min-h-screen flex items-center justify-center text-center text-white overflow-hidden"
+      >
+        <div class="absolute inset-0 bg-black opacity-60 z-10"></div>
+        <img
+          src="https://placehold.co/1920x1080/000/FFF?text=Night+Da+Nang"
+          alt="Đà Nẵng về đêm"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+        <div class="relative z-20 p-6 fade-in-section">
+          <h2 class="text-5xl md:text-7xl mb-4" data-lang-key="farewell.title">
+            Hẹn Gặp Lại
+          </h2>
+          <p
+            class="text-lg md:text-xl max-w-2xl mx-auto text-[var(--text-dark)]"
+            data-lang-key="farewell.desc"
+          >
+            Hành trình khám phá có thể kết thúc, nhưng những ký ức về Đà Nẵng sẽ
+            còn mãi. VNDPay hy vọng đã mang đến cho bạn những cảm hứng và hẹn
+            gặp lại bạn ở thành phố xinh đẹp này.
+          </p>
+        </div>
+      </section>
+
+      <section id="contact" class="py-24 bg-[var(--bg-medium)]">
+        <div class="container mx-auto px-6 text-center fade-in-section">
+          <h2
+            class="text-3xl md:text-4xl font-bold text-white mb-4"
+            data-lang-key="contact.title"
+          >
+            Liên Hệ Với Chúng Tôi
+          </h2>
+          <p
+            class="text-[var(--text-dark)] max-w-2xl mx-auto mb-8"
+            data-lang-key="contact.desc"
+          >
+            Bạn có câu hỏi hoặc muốn chia sẻ trải nghiệm? Đừng ngần ngại gửi tin
+            nhắn cho VNDPay.
+          </p>
+          <button
+            id="open-contact-modal-btn"
+            class="magnetic-btn bg-[var(--brand-primary)] hover:bg-opacity-80 text-[var(--bg-dark)] font-bold px-8 py-4 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl text-lg"
+            data-lang-key="contact.button"
+          >
+            Gửi Lời Nhắn
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-black text-[var(--text-dark)]">
+      <div class="container mx-auto px-6 py-8">
+        <div class="flex justify-center mb-6">
+          <a href="#">
+            <img src="VNDPayLogo.png" alt="VNDPay Logo" class="h-40 object-contain" />
+          </a>
+        </div>
+        <div
+          class="flex flex-col md:flex-row justify-between items-center text-center md:text-left"
+        >
+          <p
+            class="text-sm text-gray-500 mb-4 md:mb-0"
+            data-lang-key="footer.copyright"
+          >
+            © 2025 VNDPay. Một sản phẩm dự thi "NEO-UP 2025".
+          </p>
+          <div class="flex space-x-6">
+            <a href="#" class="hover:text-white"
+              ><i data-lucide="facebook" class="w-6 h-6"></i
+            ></a>
+            <a href="#" class="hover:text-white"
+              ><i data-lucide="instagram" class="w-6 h-6"></i
+            ></a>
+            <a href="#" class="hover:text-white"
+              ><i data-lucide="twitter" class="w-6 h-6"></i
+            ></a>
+            <a href="#" class="hover:text-white"
+              ><i data-lucide="youtube" class="w-6 h-6"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div id="destination-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/80" onclick="document.getElementById('destination-modal').classList.add('hidden')"></div>
+        <div id="modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-4xl bg-[#1e293b] rounded-lg shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
+            </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+
+            // Preloader animation simulation
+            setTimeout(() => {
+                document.getElementById('preloader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('preloader').style.display = 'none';
+                }, 500);
+            }, 1000);
+
+            let currentLanguage = 'vi';
+
+            // --- DATA & LANGUAGES ---
+            const languageContent = {
+            vi: {
+              nav: {
+                about: "Giới thiệu",
+                destinations: "Điểm đến",
+                culture: "Văn hóa",
+                history: "Lịch sử",
+                cuisine: "Ẩm thực",
+                planner: "Kế hoạch",
+                contact: "Liên hệ",
+              },
+              hero: {
+                subtitleNew:
+                  "Khám phá vẻ đẹp tiềm ẩn của thành phố đáng sống nhất Việt Nam.",
+              },
+              about: {
+                welcomeTitle: "Chào mừng đến với VNDPay",
+                intro1:
+                  "Khám phá Đà Nẵng – nơi hội tụ vẻ đẹp thiên nhiên, chiều sâu văn hóa và nhịp sống hiện đại. VNDPay dẫn lối bạn về với linh hồn miền Trung: một Việt Nam kiên cường, đậm đà bản sắc và luôn vươn mình ra biển lớn.",
+                intro2:
+                  "Nằm giữa dải đất miền Trung duyên dáng, Đà Nẵng là một thành phố trẻ trung, năng động và đầy sức sống. Từ Cầu Rồng phun lửa, Cầu Vàng lơ lửng giữa trời, đến bán đảo Sơn Trà hoang sơ hay Phố cổ Hội An rêu phong, Đà Nẵng mở ra hành trình khám phá đầy cảm hứng – nơi bạn không chỉ dừng chân, mà còn lưu giữ cảm xúc.",
+              },
+              destinations: {
+                title: "Điểm Đến Biểu Tượng",
+                filter: {
+                  all: "Tất cả",
+                  architecture: "Kiến trúc",
+                  nature: "Thiên nhiên",
+                  culture: "Văn hoá",
+                },
+              },
+              planner: {
+                title: "Lập Kế Hoạch Chuyến Đi",
+                desc: "Chọn các tiêu chí bên dưới, VNDPay sẽ gợi ý một hành trình được thiết kế dành riêng cho bạn.",
+                daysLabel: "1. Bạn muốn đi bao nhiêu ngày?",
+                styleLabel: "2. Phong cách chuyến đi của bạn là gì?",
+                styles: {
+                  discovery: "Khám Phá",
+                  relax: "Nghỉ Dưỡng",
+                  culture: "Văn Hóa",
+                },
+                resultTitle: "Lịch trình gợi ý cho bạn:",
+                noResult:
+                  "Vui lòng chọn số ngày và ít nhất một phong cách để tạo lịch trình.",
+                day: "Ngày",
+                day_unit: "ngày",
+                morning: "Sáng",
+                afternoon: "Chiều",
+                evening: "Tối",
+              },
+              farewell: {
+                title: "Hẹn Gặp Lại",
+                desc: "Hành trình khám phá có thể kết thúc, nhưng những ký ức về Đà Nẵng sẽ còn mãi. VNDPay hy vọng đã mang đến cho bạn những cảm hứng và hẹn gặp lại bạn ở thành phố xinh đẹp này.",
+              },
+              contact: {
+                title: "Liên Hệ Với Chúng Tôi",
+                desc: "Bạn có câu hỏi hoặc muốn chia sẻ trải nghiệm? Đừng ngần ngại gửi tin nhắn cho VNDPay.",
+                button: "Gửi Lời Nhắn",
+                form: {
+                  title: "Gửi Lời Nhắn Của Bạn",
+                  name: "Tên của bạn",
+                  email: "Email",
+                  message: "Lời nhắn",
+                  send: "Gửi",
+                },
+                success: {
+                  title: "Cảm ơn bạn!",
+                  desc: "Lời nhắn của bạn đã được gửi. Chúng tôi sẽ sớm liên hệ lại với bạn.",
+                },
+              },
+              footer: {
+                copyright:
+                  '© 2025 VNDPay. Một sản phẩm dự thi "NEO-UP 2025".',
+              },
+              modal: {
+                tabs: { overview: "Tổng quan", history: "Lịch sử", tips: "Mẹo" },
+                no_history: "Chưa có thông tin lịch sử.",
+                no_tips: "Chưa có mẹo nào.",
+              },
+            },
+            en: {
+              nav: {
+                about: "About",
+                destinations: "Destinations",
+                culture: "Culture",
+                history: "History",
+                cuisine: "Cuisine",
+                planner: "Planner",
+                contact: "Contact",
+              },
+              hero: {
+                subtitleNew:
+                  "Discover the hidden beauty of Vietnam's most livable city.",
+              },
+              about: {
+                welcomeTitle: "Welcome to VNDPay",
+                intro1:
+                  "Explore Da Nang – a convergence of natural beauty, cultural depth, and modern vitality. VNDPay guides you to the soul of the Central Region: a resilient Vietnam, rich in identity, and always reaching for the great sea.",
+                intro2:
+                  "Nestled in the charming Central Coast, Da Nang is a young, dynamic, and vibrant city. From the fire-breathing Dragon Bridge and the sky-high Golden Bridge to the pristine Son Tra Peninsula or the ancient town of Hoi An, Da Nang offers an inspiring journey where you don't just visit, you create lasting memories.",
+              },
+              destinations: {
+                title: "Iconic Destinations",
+                filter: {
+                  all: "All",
+                  architecture: "Architecture",
+                  nature: "Nature",
+                  culture: "Culture",
+                },
+              },
+              planner: {
+                title: "Plan Your Trip",
+                desc: "Select the criteria below, and VNDPay will suggest a tailor-made itinerary for you.",
+                daysLabel: "1. How many days is your trip?",
+                styleLabel: "2. What is your travel style?",
+                styles: {
+                  discovery: "Discovery",
+                  relax: "Relaxation",
+                  culture: "Cultural",
+                },
+                resultTitle: "Your Suggested Itinerary:",
+                noResult:
+                  "Please select the number of days and at least one travel style to generate an itinerary.",
+                day: "Day",
+                day_unit: "days",
+                morning: "Morning",
+                afternoon: "Afternoon",
+                evening: "Evening",
+              },
+              farewell: {
+                title: "See You Again",
+                desc: "The journey of discovery may end, but the memories of Da Nang will last forever. VNDPay hopes to have inspired you and looks forward to seeing you again in this beautiful city.",
+              },
+              contact: {
+                title: "Contact Us",
+                desc: "Have a question or want to share your experience? Feel free to send a message to VNDPay.",
+                button: "Send a Message",
+                form: {
+                  title: "Send Your Message",
+                  name: "Your Name",
+                  email: "Email",
+                  message: "Message",
+                  send: "Send",
+                },
+                success: {
+                  title: "Thank You!",
+                  desc: "Your message has been sent. We will get back to you soon.",
+                },
+              },
+              footer: {
+                copyright:
+                  '© 2025 VNDPay. An entry for the "NEO-UP 2025" contest.',
+              },
+              modal: {
+                tabs: { overview: "Overview", history: "History", tips: "Tips" },
+                no_history: "No history information available.",
+                no_tips: "No tips available.",
+              },
+            },
+          };
+
+          const data = {
+            vi: {
+              destinations: [
+                {
+                  id: "cau-vang",
+                  title: "Cầu Vàng",
+                  category: "architecture",
+                  image: "images/Diem den/cau_vang.png",
+                  shortDesc: "Kiệt tác kiến trúc giữa mây ngàn Bà Nà.",
+                  fullDesc:
+                    "Nằm ở độ cao hơn 1.400 mét, Cầu Vàng là một điểm nhấn kiến trúc ấn tượng tại Sun World Bà Nà Hills. Cây cầu dài gần 150 mét, uốn lượn mềm mại như một dải lụa vàng được nâng đỡ bởi đôi bàn tay khổng lồ, rêu phong. Công trình tạo ra một lối đi bộ giữa không trung, giữa khung cảnh mờ ảo của mây và núi rừng, mang lại một trải nghiệm siêu thực cho du khách.",
+                  history:
+                    "Được khánh thành vào tháng 6 năm 2018, Cầu Vàng nhanh chóng gây tiếng vang toàn cầu. Tạp chí TIME đã vinh danh nó trong top 100 điểm đến tuyệt vời nhất thế giới, góp phần quan trọng đưa du lịch Đà Nẵng lên một tầm cao mới.",
+                  tips: "Nên đi vào buổi sáng sớm (trước 9h) hoặc chiều muộn (sau 16h) để tránh đông người và có cơ hội chụp ảnh với mây. Mặc thêm áo khoác vì thời tiết trên Bà Nà khá lạnh, kể cả vào mùa hè.",
+                }
+                // Thêm các địa điểm khác của bạn vào đây
+              ]
+            },
+            en: {
+              destinations: [
+                 {
+                  id: "cau-vang",
+                  title: "Golden Bridge",
+                  category: "architecture",
+                  image: "images/Diem den/cau_vang.png",
+                  shortDesc: "An architectural masterpiece amidst the clouds of Ba Na.",
+                  fullDesc: "Located at an altitude of over 1,400 meters, the Golden Bridge is an impressive architectural highlight at Sun World Ba Na Hills. Spanning nearly 150 meters, the bridge curves softly like a golden silk strip supported by giant, moss-covered hands. It creates a walkway in the sky, amidst the misty scenery of mountains and forests, offering a surreal experience for visitors.",
+                  history: "Inaugurated in June 2018, the Golden Bridge quickly gained global fame. TIME magazine named it one of the World's 100 Greatest Places, significantly elevating Da Nang's tourism status.",
+                  tips: "Visit early in the morning (before 9 AM) or late afternoon (after 4 PM) to avoid crowds and catch the clouds. Bring a light jacket as it can get chilly on Ba Na Hills, even in summer."
+                }
+              ]
+            }
+          };
+
+            // --- FUNCTIONALITY ---
+            const destinationsGrid = document.getElementById("destinations-grid");
+            const modal = document.getElementById("destination-modal");
+            const modalContent = document.getElementById("modal-content");
+
+            const renderDestinations = (filter = "all") => {
+                if(!destinationsGrid) return;
+                destinationsGrid.innerHTML = "";
+                const currentDestinations = data[currentLanguage].destinations || [];
+                
+                currentDestinations
+                    .filter((d) => filter === "all" || d.category === filter)
+                    .forEach((dest) => {
+                        const card = document.createElement("div");
+                        card.className = "destination-card bg-[#1e293b] rounded-lg shadow-lg hover:shadow-green-900/20 transition-all duration-300 transform hover:-translate-y-2 cursor-pointer";
+                        card.dataset.id = dest.id;
+                        card.innerHTML = `<div class="destination-card-img-wrapper rounded-t-lg overflow-hidden"><img src="${dest.image}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1A2B22/EAE7D5?text=VNDPay';" alt="${dest.title}" class="w-full h-56 object-cover rounded-t-lg transition-transform hover:scale-105"></div><div class="p-6"><h3 class="text-xl font-bold text-white">${dest.title}</h3><p class="text-gray-400 mt-2">${dest.shortDesc}</p></div>`;
+                        card.addEventListener("click", () => openModal(dest.id));
+                        destinationsGrid.appendChild(card);
+                    });
+            };
+
+            const openModal = (id) => {
+                const dest = data[currentLanguage].destinations.find((d) => d.id === id);
+                if (!dest) return;
+                
+                modalContent.innerHTML = `
+                    <div class="w-full md:w-1/2 flex-shrink-0 h-64 md:h-auto">
+                        <img src="${dest.image}" onerror="this.onerror=null;this.src='https://placehold.co/600x600/1A2B22/EAE7D5?text=VNDPay';" alt="${dest.title}" class="w-full h-full object-cover md:rounded-l-lg rounded-t-lg md:rounded-t-none">
+                    </div>
+                    <div class="w-full md:w-1/2 p-6 flex flex-col overflow-y-auto relative bg-[#1e293b]">
+                         <button id="modal-close-inner" class="absolute top-3 right-4 text-gray-400 hover:text-white z-10 text-3xl">&times;</button>
+                        <h2 class="text-3xl font-bold mb-4 text-white">${dest.title}</h2>
+                        <div id="modal-tabs" class="flex border-b border-gray-600 mb-4">
+                            <button class="modal-tab active px-4 py-2 text-white border-b-2 border-white" data-tab="overview">${languageContent[currentLanguage].modal.tabs.overview}</button>
+                            <button class="modal-tab px-4 py-2 text-gray-400 hover:text-white" data-tab="history">${languageContent[currentLanguage].modal.tabs.history}</button>
+                            <button class="modal-tab px-4 py-2 text-gray-400 hover:text-white" data-tab="tips">${languageContent[currentLanguage].modal.tabs.tips}</button>
+                        </div>
+                        <div id="modal-tab-content" class="flex-grow text-gray-300">
+                            <div class="tab-pane active" data-pane="overview"><p class="leading-relaxed">${dest.fullDesc}</p></div>
+                            <div class="tab-pane hidden" data-pane="history"><p class="leading-relaxed">${dest.history || languageContent[currentLanguage].modal.no_history}</p></div>
+                            <div class="tab-pane hidden" data-pane="tips"><p class="leading-relaxed">${dest.tips || languageContent[currentLanguage].modal.no_tips}</p></div>
+                        </div>
+                    </div>
+                `;
+                
+                modal.classList.remove('hidden');
+
+                // Logic close modal
+                document.getElementById('modal-close-inner').addEventListener('click', () => {
+                    modal.classList.add('hidden');
+                });
+
+                // Logic Tabs
+                const tabs = modalContent.querySelectorAll('.modal-tab');
+                const panes = modalContent.querySelectorAll('.tab-pane');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => {
+                            t.classList.remove('active', 'border-white', 'text-white');
+                            t.classList.add('text-gray-400');
+                        });
+                        tab.classList.add('active', 'border-white', 'text-white');
+                        tab.classList.remove('text-gray-400');
+
+                        const target = tab.dataset.tab;
+                        panes.forEach(pane => {
+                            pane.classList.add('hidden');
+                            if(pane.dataset.pane === target) {
+                                pane.classList.remove('hidden');
+                            }
+                        });
+                    });
+                });
+            };
+
+            // Init
+            renderDestinations();
+            
+            // Filter click events
+            document.querySelectorAll(".filter-btn").forEach((button) => {
+              button.addEventListener("click", () => {
+                document.querySelectorAll(".filter-btn").forEach((btn) => {
+                    btn.classList.remove("active", "text-white", "border-white");
+                    btn.classList.add("text-gray-400", "border-gray-600");
+                });
+                button.classList.add("active", "text-white", "border-white");
+                button.classList.remove("text-gray-400", "border-gray-600");
+                renderDestinations(button.dataset.filter);
+              });
+            });
+
+            // Language Switcher Logic (Simple version)
+            document.querySelectorAll('.lang-switcher button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentLanguage = btn.dataset.lang;
+                    document.querySelectorAll('.lang-switcher button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Update content
+                    document.querySelectorAll('[data-lang-key]').forEach(el => {
+                        const key = el.dataset.langKey;
+                        const keys = key.split('.');
+                        let content = languageContent[currentLanguage];
+                        keys.forEach(k => content = content[k]);
+                        if(content) el.innerText = content;
+                    });
+                    
+                    renderDestinations(document.querySelector('.filter-btn.active')?.dataset.filter || 'all');
+                });
+            });
+        });
+    </script>
+  </body>
+</html>
